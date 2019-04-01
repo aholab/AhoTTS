@@ -1,0 +1,1 @@
+/usr/bin/c++       CMakeFiles/tts_client.dir/Socket.cpp.o CMakeFiles/tts_client.dir/Socket_Cliente.cpp.o CMakeFiles/tts_client.dir/Cliente.cpp.o  -o tts_client  -L../../../lib -rdynamic -lhtts -Wl,-rpath,../../../lib: 

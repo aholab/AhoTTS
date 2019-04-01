@@ -1,0 +1,19 @@
+QS frase_tipo==1 { "*#1=*" }
+QS frase_numsilabas<=20 { "*+?-*","*+10-*","*+11-*","*+12-*","*+13-*","*+14-*","*+15-*","*+16-*","*+17-*","*+18-*","*+19-*","*+20-*" }
+QS frase_numpalabras==4 { "*-4$*" }
+QS frase_numpalabras==8 { "*-8$*" }
+QS frase_numpalabras<=7 { "*-1$*","*-2$*","*-3$*","*-4$*","*-5$*","*-6$*","*-7$*" }
+QS frase_numgruposac<=9 { "*$1^*","*$2^*","*$3^*","*$4^*","*$5^*","*$6^*","*$7^*","*$8^*","*$9^*" }
+QS frase_numpausas==2 { "*^2:*" }
+
+{*}[2]
+{
+ 0 frase_tipo==1 -4 -1 
+ -1 frase_numpalabras==4 -2 "xxx_s2_1" 
+ -2 frase_numpausas==2 -3 "xxx_s2_2" 
+ -3 frase_numpalabras==8 -5 "xxx_s2_3" 
+ -4 frase_numgruposac<=9 "xxx_s2_5" "xxx_s2_4" 
+ -5 frase_numsilabas<=20 "xxx_s2_6" -6 
+ -6 frase_numpalabras<=7 "xxx_s2_8" "xxx_s2_7" 
+}
+

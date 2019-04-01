@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 2.8)
+project(libhtts)
+add_subdirectory(src)
+IF(MSVC)
+	ADD_DEFINITIONS(/D _CRT_SECURE_NO_WARNINGS)
+ENDIF(MSVC)

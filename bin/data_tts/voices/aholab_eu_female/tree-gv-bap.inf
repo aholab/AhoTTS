@@ -1,0 +1,15 @@
+QS frase_tipo==1 { "*#1=*" }
+QS frase_tipo==2 { "*#2=*" }
+QS frase_numgruposac<=6 { "*$1^*","*$2^*","*$3^*","*$4^*","*$5^*","*$6^*" }
+QS frase_numgruposac<=8 { "*$1^*","*$2^*","*$3^*","*$4^*","*$5^*","*$6^*","*$7^*","*$8^*" }
+QS frase_numpausas==4 { "*^4:*" }
+
+{*}[2]
+{
+ 0 frase_numgruposac<=8 -2 -1 
+ -1 frase_tipo==2 -4 "xxx_s2_1" 
+ -2 frase_tipo==1 "xxx_s2_2" -3 
+ -3 frase_numpausas==4 "xxx_s2_4" "xxx_s2_3" 
+ -4 frase_numgruposac<=6 "xxx_s2_6" "xxx_s2_5" 
+}
+

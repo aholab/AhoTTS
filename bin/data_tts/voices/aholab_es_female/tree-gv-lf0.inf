@@ -1,0 +1,26 @@
+QS frase_tipo==2 { "*#2=*" }
+QS frase_numsilabas<=20 { "*+?-*","*+10-*","*+11-*","*+12-*","*+13-*","*+14-*","*+15-*","*+16-*","*+17-*","*+18-*","*+19-*","*+20-*" }
+QS frase_numpalabras<=8 { "*-1$*","*-2$*","*-3$*","*-4$*","*-5$*","*-6$*","*-7$*","*-8$*" }
+QS frase_numpalabras<=10 { "*-?$*","*-10$*" }
+QS frase_numpalabras<=15 { "*-?$*","*-10$*","*-11$*","*-12$*","*-13$*","*-14$*","*-15$*" }
+QS frase_numgruposac==8 { "*$8^*" }
+QS frase_numgruposac<=5 { "*$1^*","*$2^*","*$3^*","*$4^*","*$5^*" }
+QS frase_numpausas==2 { "*^2:*" }
+QS frase_numpausas==7 { "*^7:*" }
+QS frase_numpausas<=2 { "*^1:*","*^2:*" }
+
+{*}[2]
+{
+   0 frase_tipo==2                                      -1         -3    
+  -1 frase_numpalabras<=10                              -2         -8    
+  -2 frase_numpausas==2                                 -4          "gv_lf0_1" 
+  -3 frase_numsilabas<=20                                "gv_lf0_2"      -7    
+  -4 frase_numpausas==7                                 -5          "gv_lf0_3" 
+  -5 frase_numgruposac==8                                "gv_lf0_4"      -6    
+  -6 frase_numpalabras<=15                               "gv_lf0_6"       "gv_lf0_5" 
+  -7 frase_numpausas==2                                  "gv_lf0_8"       "gv_lf0_7" 
+  -8 frase_numgruposac<=5                               -9          "gv_lf0_9" 
+  -9 frase_numpalabras<=8                               "gv_lf0_10"     -10    
+ -10 frase_numpausas<=2                                 "gv_lf0_12"      "gv_lf0_11" 
+}
+

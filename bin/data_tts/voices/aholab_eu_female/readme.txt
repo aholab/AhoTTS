@@ -1,0 +1,1 @@
+Labels acabadas en 1 para "es" y en 2 para "eu"

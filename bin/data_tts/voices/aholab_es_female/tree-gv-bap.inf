@@ -1,0 +1,11 @@
+QS frase_tipo==2 { "*#2=*" }
+QS frase_numpalabras<=15 { "*-?$*","*-10$*","*-11$*","*-12$*","*-13$*","*-14$*","*-15$*" }
+QS frase_numpausas==2 { "*^2:*" }
+
+{*}[2]
+{
+   0 frase_tipo==2                                      -1          "gv_bap_1" 
+  -1 frase_numpalabras<=15                               "gv_bap_2"      -2    
+  -2 frase_numpausas==2                                  "gv_bap_4"       "gv_bap_3" 
+}
+

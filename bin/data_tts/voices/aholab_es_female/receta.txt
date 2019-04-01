@@ -1,0 +1,5 @@
+Esta voz fue creada en su momento transformando kiko-es con la instrucción siguiente:
+
+ahohtstransf ..\..\Escritorio\kikotuning\kiko4\ ..\..\Escritorio\kikotuning\kikoF\ --plfw={0,0.08,0.15,0.5,1;0,0.09,0.18,0.6,1} --fpitch=1.8 --fmfenh=-0.5 --plas={0,1;0,6}
+
+
