@@ -17,39 +17,39 @@ http://aholab.ehu.es/ahocoder/
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 Copyrights:
-	1997-2015  Aholab Signal Processing Laboratory, University of the Basque
+	1997-2012  Aholab Signal Processing Laboratory, University of the Basque
 	 Country (UPV/EHU)
-    *2011-2015 Aholab Signal Processing Laboratory, University of the Basque
-	  Country (UPV/EHU)
+	*2011-2012 Aholab Signal Processing Laboratory, University of the Basque
+	Country (UPV/EHU)
 
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 Licenses:
 	GPL-3.0+
 	*GPL-3.0+
 	'Modified BSD (Compatible with GNU GPL)
 
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-GPL-3.0+
- This program is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
- .
- This package is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
- .
- You should have received a copy of the GNU General Public License
- along with this program. If not, see <http://www.gnu.org/licenses/>.
- .
- On Debian systems, the complete text of the GNU General
- Public License version 3 can be found in /usr/share/common-licenses/GPL-3.
-
+	GPL-3.0+
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+	.
+	This package is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ 	GNU General Public License for more details.
+  	.
+   	You should have received a copy of the GNU General Public License
+     	along with this program. If not, see <http://www.gnu.org/licenses/>.
+     	.
+     	On Debian systems, the complete text of the GNU General
+     	Public License version 3 can be found in /usr/share/common-licenses/GPL-3.
 //\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/
 /******************************************************************************/
+
 #ifndef __ES_HDIC_HPP__
 #define __ES_HDIC_HPP__
 
@@ -135,8 +135,9 @@ HDICQERY_ENCODE(firstbit,nbits) */
 
 #define HDIC_QUERY_ES_OTRO HDICQUERY_ENCODE(19,1) // Otros
 	#define HDIC_QUERY_ES_OTRO_SUST	1 // Sustantivos (para evitar ambigüedades)
-
-#define HDIC_QUERY_ES_NOR HDICQUERY_ENCODE(20,2)
+//EVA con 2 bits no es posible codificar el 4 que se usa para acronimos y no los expande. Le doy 3 bits a este campo y nos quedamos sin bits libres
+//#define HDIC_QUERY_ES_NOR HDICQUERY_ENCODE(20,2)
+#define HDIC_QUERY_ES_NOR HDICQUERY_ENCODE(20,3)
 	#define HDIC_ANSWER_ES_NOR_ABB	1 // Abreviaturas
 	#define HDIC_ANSWER_ES_NOR_ABBNF	2 // Abreviaturas No Fin (Sr. Sra.)
 	#define HDIC_ANSWER_ES_NOR_UNIT 3 // Unidades

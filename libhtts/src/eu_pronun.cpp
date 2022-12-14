@@ -228,7 +228,7 @@ CHAR eu_validOneEndStr[] = "D F G H L R M N O P Q I Z"; //Larraitz Q Z
 
 CHAR eu_validTwoStaStr[] = "OL OR PL PR FL FR"; //Larraitz
 CHAR eu_validTwoMidStr[] = "NM NO NP NQ NL NR ND NF NG NH NI NZ" //Larraitz
-						   "MN MO MP MQ ML MR MD MF MG MH MI MZ" //Larraitz
+						   "MM MN MO MP MQ ML MR MD MF MG MH MI MZ" //Larraitz - EVA added MM (hummus)
 						   "ON OM OP OQ OÑ OL OR OF OG OH OI OZ" //Larraitz
 						   "PN PM PO PL PR PF PG PH PI PP PZ" //Larraitz
 						   "QN QM QO QF" //Larraitz
@@ -497,7 +497,14 @@ pCHAR filterStr(pCHAR str)
 						break;
 				}
 				break;
-
+			case 'm': //EVA so that mm -> m
+                   		if (uniqConso(str[i+1]) == 'm') {
+                         		tmp = strdup(str);
+                         		strcpy(&(str[i]), &(tmp[i+1]));//inaki
+                         		free(tmp);//inaki
+                         		strl--;
+                   		}
+                 		break;
 			default:
 				break;
 		}

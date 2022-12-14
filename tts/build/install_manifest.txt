@@ -1,3 +1,0 @@
-/home/aholab/eva/ahotts-code/bin/tts
-/home/aholab/eva/ahotts-code/bin/tts_client
-/home/aholab/eva/ahotts-code/bin/tts_server

@@ -1,52 +1,52 @@
 /******************************************************************************/
 /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-AhoTTS: A Text-To-Speech system for Basque* and Spanish*,
-developed by Aholab Signal Processing Laboratory at the
-University of the Basque Country (UPV/EHU). Its acoustic engine is based on
-hts_engine' and it uses AhoCoder* as vocoder.
-(Read COPYRIGHT_and_LICENSE_code.txt for more details)
---------------------------------------------------------------------------------
+	AhoTTS: A Text-To-Speech system for Basque* and Spanish*,
+	developed by Aholab Signal Processing Laboratory at the
+	University of the Basque Country (UPV/EHU). Its acoustic engine is based on
+	hts_engine' and it uses AhoCoder* as vocoder.
+	(Read COPYRIGHT_and_LICENSE_code.txt for more details)
+	--------------------------------------------------------------------------------
 
-Linguistic processing for Basque and Spanish, Vocoder (Ahocoder) and
-integration by Aholab UPV/EHU.
+	Linguistic processing for Basque and Spanish, Vocoder (Ahocoder) and
+	integration by Aholab UPV/EHU.
 
-*AhoCoder is an HNM-based vocoder for Statistical Synthesizers
-http://aholab.ehu.es/ahocoder/
+	*AhoCoder is an HNM-based vocoder for Statistical Synthesizers
+	http://aholab.ehu.es/ahocoder/
 
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-Copyrights:
-	1997-2015  Aholab Signal Processing Laboratory, University of the Basque
-	 Country (UPV/EHU)
-    *2011-2015 Aholab Signal Processing Laboratory, University of the Basque
-	  Country (UPV/EHU)
+	Copyrights:
+	1997-2012  Aholab Signal Processing Laboratory, University of the Basque
+ 	Country (UPV/EHU)
+	*2011-2012 Aholab Signal Processing Laboratory, University of the Basque
+	Country (UPV/EHU)
 
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-Licenses:
+	Licenses:
 	GPL-3.0+
 	*GPL-3.0+
 	'Modified BSD (Compatible with GNU GPL)
 
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-GPL-3.0+
- This program is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
- .
- This package is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
- .
- You should have received a copy of the GNU General Public License
- along with this program. If not, see <http://www.gnu.org/licenses/>.
- .
- On Debian systems, the complete text of the GNU General
- Public License version 3 can be found in /usr/share/common-licenses/GPL-3.
+	GPL-3.0+
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+	.
+	This package is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+	.
+	You should have received a copy of the GNU General Public License
+	along with this program. If not, see <http://www.gnu.org/licenses/>.
+	.
+	On Debian systems, the complete text of the GNU General
+	Public License version 3 can be found in /usr/share/common-licenses/GPL-3.
 
 //\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/
 /******************************************************************************/
@@ -177,7 +177,7 @@ AbbAcrUniType	LangES_TextToList::isAbbAcrUni( CtI p )
 
 	/*if (!patternOk) //Iñaki, para que siga mirando el resto de abreviaturas
 	{
-  		free(pattern);
+  		xfree(pattern);
 		return retval;
 	}*/
 
@@ -193,7 +193,6 @@ AbbAcrUniType	LangES_TextToList::isAbbAcrUni( CtI p )
 
   //La buscamos en el diccionario.
 	myref = dic->search(temp);
-	
 	len = dic->query(myref, HDIC_QUERY_MATCHLEN);
 	if (!len) {
 		abbacr = dic->query(myref, HDIC_QUERY_ES_NOR);
@@ -224,7 +223,7 @@ AbbAcrUniType	LangES_TextToList::isAbbAcrUni( CtI p )
 			}
 		}
 	}
-	
+
 	//Si no, todavía puede que con algún punto cortado, ...
 	if (retval == AAU_UNKNOWN)
 	{
@@ -242,7 +241,9 @@ AbbAcrUniType	LangES_TextToList::isAbbAcrUni( CtI p )
 						len = dic->query(myref, HDIC_QUERY_MATCHLEN);
 						if (!len) 
 						{
-							abbacr = dic->query(myref, HDIC_QUERY_EU_NOR);
+//EVA Se estaba preguntando por la etiqueta en euskera, por eso no encontraba nada!!
+//							abbacr = dic->query(myref, HDIC_QUERY_EU_NOR);
+							abbacr = dic->query(myref, HDIC_QUERY_ES_NOR);
 							if (abbacr) 
 							{
 								if (abbacr == HDIC_ANSWER_ES_NOR_ABB) retval = AAU_ABBP;
@@ -310,23 +311,29 @@ CtI LangES_TextToList::expAbbAcrUni( CtI p, BOOL unit )
 	if(!unit && temp[strlen(temp)-1] != '.')
 	{
 		temp = concatStr(temp,(char *)".");
-		q=ct.nextGrp(p);
-		if(strlen(ct(q).str) != 1)
-		{
-			temp2 = strdup(ct(q).str);
-			ct.setStr(q, &(temp2[1]));
-			free(temp2);
-		}
-		//Si no hay que verificar que el siguiente grupo está en mayúsculas.
-		else if (ct.nextGrp(q))
-		{
-			q = ct.nextGrp(q);
-			if ((ct(q).pattern)[0] == 'l')
+//EVA: Si lo unico que hay en el texto de entrada es una abreviatura y no hay punto (c/c por ejemplo) no existe un grupo siguiente, asi que no debemos apuntarlo
+                if (ct.nextGrp(p)!=NULL)
+                {
+			q=ct.nextGrp(p);
+			if(strlen(ct(q).str) != 1)
 			{
-				if (ct.getStr(q)[0] == chset_ToLower(ct.getStr(q)[0]) )
+				temp2 = strdup(ct(q).str);
+//EVA: Solo eliminar la primera letra si es el punto
+				if(temp2[1]=='.')
+				ct.setStr(q, &(temp2[1]));
+				free(temp2);
+			}
+			//Si no hay que verificar que el siguiente grupo está en mayúsculas.
+			else if (ct.nextGrp(q))
+			{
+				q = ct.nextGrp(q);
+				if ((ct(q).pattern)[0] == 'l')
 				{
-					q = ct.prevGrp(q);
-					ct.delGrp(q);
+					if (ct.getStr(q)[0] == chset_ToLower(ct.getStr(q)[0]) )
+					{
+						q = ct.prevGrp(q);
+						ct.delGrp(q);
+					}	
 				}
 			}
 		}

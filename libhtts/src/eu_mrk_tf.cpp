@@ -95,16 +95,16 @@ UttI LangEU_PhTrans::tf_mrk_ch2ph(UttPh & u, UttI senp)
 #define SETSTREUS(p) u.cell(p).setStress(USTRESS_TEXT)	//Azentua ezartzeko
 #define NEXT(p)  u.charNext(p,URANGE_WORD)					//Seinalatzailea elementu bat aurreratzen da, letra mailen
 
-	//fprintf(stderr,"0\n");
 	HDicDB * mydic;
 	HDicRef myref;
 	pCHAR exp;
 	const CHAR * word;
 	UttI pTF,pTF2;
 	CHAR * transkrip;
-	INT	lengTF, lengWORD, dif, lengTFPKin, lengWORDPKin, numP;
+	INT	lengTF, lengWORD, dif, lengTFPKin, lengWORDPKin, numP, numTF;
 	INT	i=0;
-
+	CHAR *pch;
+	
 	mydic=new LangEU_HDicDB; //INAKI
 	mydic->create(getPhTHDicName()); //INAKI
 	//Hiztegian egin behar den BILAKETA
@@ -114,31 +114,55 @@ UttI LangEU_PhTrans::tf_mrk_ch2ph(UttPh & u, UttI senp)
 	transkrip=strdup(exp);			//Hiztegian dagoen transkripzio fonetikoaren edukina edukiko du
 	word=u.cell(pTF).getWord();	//Hitza
 
+/*EVA 2015/05/07
+Como las longitudes de las transcripciones en el diccionario compilado y de texto son diferentes porque en el compilado hay un caracter LF de más, las igualo aquí
+*/
+	//fprintf(stderr,"Antes del ajuste long. transcrip=%d %s\n",strlen(transkrip),transkrip);
+	if (transkrip[strlen(transkrip)-1]==10) 
+	{
+		//fprintf(stderr,"transkrip[strlen(transkrip)-1]=10\n");
+		
+		transkrip[strlen(transkrip)-1]='\0';
+	}
+
+
 	//Behar diren luzeeren kalkulua
+	
+//0.1.0 ISC rehacemos el calculo del numero de puntos de verdad
+
+//	numP=(INT)floor(float(lengWORD/2.0));	//Hiztegiaren transkripzio fonetikoaren fonemak puntu seinuen bitartez banandurik daude. Transkripzioaren puntu seinuen kopuruaren kalkulua.
+	numP=0;
+	pch=transkrip;
+	while ((pch=strchr(pch,'.'))!=NULL) {
+		numP++;
+		pch++;
+		}
 	lengTFPKin=strlen(transkrip);		//Transkripzio fonetikoaren luzeera puntuekin.
-	lengTF= (INT)ceil(float(lengTFPKin/2.0));	//Transkripzio fonetikoaren luzeera.
+//0.1.0 ISC	lengTF= (INT)ceil(float(lengTFPKin/2.0));	//Transkripzio fonetikoaren luzeera.
+	lengTF=lengTFPKin-numP; //Transkripzio fonetikoaren luzeera.
 	lengWORD=strlen(word);	//Hitzaren luzeera.
+	
 	dif=lengWORD-lengTF;		//Luzeeren desberdintasuna.
-	numP=(INT)floor(float(lengWORD/2.0));	//Hiztegiaren transkripzio fonetikoaren fonemak puntu seinuen bitartez banandurik daude. Transkripzioaren puntu seinuen kopuruaren kalkulua.
 	lengWORDPKin=lengWORD+numP;	//Hitzaren luzeera puntu seinuak edukiko balitu.
 
-
+	numTF=1;  //
 	for (i=0;i<lengTFPKin;i++)
 	{
-		if (i<lengWORDPKin) //Hitzaren luzeera (puntuekin) ez bada gainditu, seinalatzailea hurrengo grafiara seinalatuko du.
+		if ((numTF<lengWORD)&&(transkrip[i] != '.')) //si el n?mero de fonemas procesado es menor que el n?mero de letras y tenemos un nuevo fonema usamos la celda de la siguiente letra
 		{
 			pTF2 = NEXT(pTF);
 		}
-		else //Bestela gelaxka berria sortu beharko da.
+		else if((numTF!=lengWORD)&&(transkrip[i] != '.'))//Bestela gelaxka berria sortu beharko da.
 		{
+			//fprintf(stderr,"\tadd_new_cell PTF=%d\n", pTF);
 			pTF=u.cellAddAfter(pTF);
+			//u.cell(pTF).setChar('a');
 		}
-
 
 	switch (transkrip[i])
 	{
 
-		case '.' :  break;
+		case '.' : numTF++; break; 
 		case 'a' : SETPH(pTF, PHEU_a);   break;
 		case 'e' : SETPH(pTF, PHEU_e); break;
 		case 'i' : SETPH(pTF, PHEU_i);  break;
@@ -210,6 +234,13 @@ UttI LangEU_PhTrans::tf_mrk_ch2ph(UttPh & u, UttI senp)
 						SETPH(pTF, PHEU_dj); break;
 					}
 				}
+/*EVA 2015/07/07
+Si llegaba aquí como no habia else con el correspondiente break se ponia la gaproximante del siguiente case en vez de la g normal
+*/
+				else
+				{
+					SETPH(pTF, PHEU_g); break;
+				}
 			}
 			else
 			{
@@ -268,7 +299,7 @@ UttI LangEU_PhTrans::tf_mrk_ch2ph(UttPh & u, UttI senp)
 					}
 					if (transkrip[i+1]!='.')
 					{
-						if (transkrip[i+1]!='´')
+						if (transkrip[i+1]!='`')
 						{
 							fprintf(stderr,"Warning: Hitzegian idatzitako transkripzioa gaizki dago.\n \t  GOGORATU: FONEMAK PUNTU SEINUAZ DESBERDINDU.");
 							SETPH(pTF, PHEU_s); break;
@@ -317,7 +348,7 @@ UttI LangEU_PhTrans::tf_mrk_ch2ph(UttPh & u, UttI senp)
 								{
 									SETPH(pTF,PHEU_ts); break;
 								}
-								else if (transkrip[i+1]=='´')
+								else if (transkrip[i+1]=='`')
 								{
 									i++;
 									SETPH(pTF,PHEU_tZ); break;
@@ -348,7 +379,8 @@ UttI LangEU_PhTrans::tf_mrk_ch2ph(UttPh & u, UttI senp)
 		} // switch-en bukarea
 
 
-		if (i<lengWORDPKin&&transkrip[i]!='.')
+//0.1.0 ISC		if (i<lengWORDPKin)
+		if ((numTF<lengWORD)&&(transkrip[i]!='.'))
 		{
 			pTF=pTF2;
 		}

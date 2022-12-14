@@ -1,3 +1,0 @@
-/home/aholab/eva/ahotts-code/tts/build/src/CMakeFiles/tts.dir
-/home/aholab/eva/ahotts-code/tts/build/src/CMakeFiles/tts_client.dir
-/home/aholab/eva/ahotts-code/tts/build/src/CMakeFiles/tts_server.dir

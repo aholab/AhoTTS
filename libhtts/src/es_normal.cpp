@@ -294,9 +294,9 @@ CtI LangES_TextToList::normal(VOID)
 		switch (isAbbAcrUni(p)) {
 			case AAU_ABB:
 //			p = expAbbAcrUni(p, FALSE, FALSE );
-			break;
+			//break;
 			case AAU_ACR:
-				p = expAbbAcrUni(p, TRUE );
+				p = expAbbAcrUni(p, FALSE );
 				break;
 			case AAU_UNIT:
 				p = expAbbAcrUni(p, TRUE );
