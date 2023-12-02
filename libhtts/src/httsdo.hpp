@@ -220,10 +220,41 @@ public:
 
 	virtual VOID callback( VOID * /*cb_n*/ ) { };
 
+    BOOL setLang(Lang l);
+    BOOL setMethod(const CHAR* val);
+    BOOL setPthModel(const CHAR* val);
+    BOOL setProsDBName(const CHAR* val);
+    BOOL setPowModel(const CHAR* val);
+    BOOL setDurModel(const CHAR* val);
+    BOOL setPauModel(const CHAR* val);
+    BOOL setHDicDBName(const CHAR* val);
+    BOOL setDefEmo(const CHAR* val);
+    BOOL setDefIntEmo(const CHAR* val);
+#ifdef HTTS_DIPHONE
+    BOOL setDBName(const CHAR* val);
+    BOOL setDBLoadMode(const CHAR* val);
+#endif
+
+    // XXX: we have to remove this
 	BOOL set( const CHAR* param, const CHAR* val );
+
+    Lang getLang();
+    const CHAR* getDefEmo();
+    const CHAR* getDefIntEmo();
+    const CHAR* getMethod();
+    const CHAR* getPthModel();
+    const CHAR* getProsDBName();
+    const CHAR* getPowModel();
+    const CHAR* getDurModel();
+    const CHAR* getPauModel();
+    const CHAR* getHDicDBName();
+    const CHAR* getQueryMethods();
+    const CHAR* getQueryLanguages();
+#ifdef HTTS_METHOD_HTS
+    uint getSRate();
+#endif
+    // XXX: we have to remove this
 	const CHAR* get( const CHAR* param );
-
-
 };
 
 /**********************************************************/

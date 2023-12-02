@@ -480,166 +480,159 @@ INT HTTSDo::get_timeev( VOID )
 
 /**********************************************************/
 
-BOOL HTTSDo::set( const CHAR* param, const CHAR* val )
-{
-	if (!strcmp(param,"Lang")) {
-		if (created) return FALSE;
-		lang= val;
+BOOL HTTSDo::setLang(Lang l){
+    if (created) return FALSE;
+    lang = l;
 #ifdef DEBUG_SHELL
 		htts_warn("HTTSDo::set - Language value captured [%s]", Lang2Str(l));
 #endif
-		return TRUE;
-	}
+    return TRUE;
+}
 
-	if (!strcmp(param,"Method")) {
-		if (created) return FALSE;
-		smethod= val;
+BOOL HTTSDo::setMethod(const CHAR* val){
+    if (created) return FALSE;
+    smethod= val;
 #ifdef DEBUG_SHELL
-		htts_warn("HTTSDo::set - Method value captured [%s]", smethod.chars());
+    htts_warn("HTTSDo::set - Method value captured [%s]", smethod.chars());
 #endif
-		return TRUE;
-	}
+    return TRUE;
+}
 
-	if (!strcmp(param,"PthModel")) {
-		if (created) return FALSE;
-		modelpth= val;
+BOOL HTTSDo::setPthModel(const CHAR* val){
+    if (created) return FALSE;
+    modelpth= val;
 #ifdef DEBUG_SHELL
-		htts_warn("HTTSDo::set - PthModel value captured [%s]", modelpth.chars());
+    htts_warn("HTTSDo::set - PthModel value captured [%s]", modelpth.chars());
 #endif
-		return TRUE;
-	}
+    return TRUE;
+}
 
-	if (!strcmp(param,"ProsDBName")) {
-		if (created) return FALSE;
-		dbpros= val;
+BOOL HTTSDo::setProsDBName(const CHAR* val){
+    if (created) return FALSE;
+    dbpros= val;
 #ifdef DEBUG_SHELL
-		htts_warn("HTTSDo::set - ProsDBName value captured [%s]", dbpros.chars());
+    htts_warn("HTTSDo::set - ProsDBName value captured [%s]", dbpros.chars());
 #endif
-		return TRUE;
-	}
+    return TRUE;
+}
 
-
-	if (!strcmp(param,"PowModel")) {
-		if (created) return FALSE;
-		modelpow= val;
+BOOL HTTSDo::setPowModel(const CHAR* val){
+    if (created) return FALSE;
+    modelpow= val;
 #ifdef DEBUG_SHELL
-		htts_warn("HTTSDo::set - PowModel value captured [%s]", modelpow.chars());
+    htts_warn("HTTSDo::set - PowModel value captured [%s]", modelpow.chars());
 #endif
-		return TRUE;
-	}
+    return TRUE;
+}
 
-	if (!strcmp(param,"DurModel")) {
-		if (created) return FALSE;
-		modeldur= val;
+BOOL HTTSDo::setDurModel(const CHAR* val){
+    if (created) return FALSE;
+    modeldur= val;
 #ifdef DEBUG_SHELL
-		htts_warn("HTTSDo::set - DurModel value captured [%s]", modeldur.chars());
+    htts_warn("HTTSDo::set - DurModel value captured [%s]", modeldur.chars());
 #endif
-		return TRUE;
-	}
+    return TRUE;
+}
 
-	if (!strcmp(param,"PauModel")) {
-		if (created) return FALSE;
-		modelpau= val;
+BOOL HTTSDo::setPauModel(const CHAR* val){
+    if (created) return FALSE;
+    modelpau= val;
 #ifdef DEBUG_SHELL
-		htts_warn("HTTSDo::set - PauModel value captured [%s]", modelpau.chars());
+    htts_warn("HTTSDo::set - PauModel value captured [%s]", modelpau.chars());
 #endif
-		return TRUE;
-	}
+    return TRUE;
+}
 
 #ifdef HTTS_DIPHONE
-	if (!strcmp(param,"DBName")) {
-		if (created) return FALSE;
-		dbname= val;
+BOOL HTTSDo::setDBName(const CHAR* val){
+    if (created) return FALSE;
+    dbname= val;
 #ifdef DEBUG_SHELL
-		htts_warn("HTTSDo::set - DBName value captured [%s]", dbname.chars());
+    htts_warn("HTTSDo::set - DBName value captured [%s]", dbname.chars());
 #endif
-		return TRUE;
-	}
+    return TRUE;
+}
 #endif
 
 #ifdef HTTS_DIPHONE
-	if (!strcmp(param,"DBLoadMode")) {
-		if (created) return FALSE;
-		dbmode= val;
+BOOL HTTSDo::setDBLoadMode(const CHAR* val){
+    if (created) return FALSE;
+    dbmode= val;
 #ifdef DEBUG_SHELL
-		htts_warn("HTTSDo::set - DBLoadMode value captured [%s]", dbmode.chars());
+    htts_warn("HTTSDo::set - DBLoadMode value captured [%s]", dbmode.chars());
 #endif
-		return TRUE;
-	}
+    return TRUE;
+}
 #endif
 
-	if (!strcmp(param,"HDicDBName")) {
-		if (created) return FALSE;
-		hdicdbname= val;
+BOOL HTTSDo::setHDicDBName(const CHAR* val){
+    if (created) return FALSE;
+    hdicdbname= val;
 #ifdef DEBUG_SHELL
-		htts_warn("HTTSDo::set - HDicDBName value captured [%s]", hdicdbname.chars());
+    htts_warn("HTTSDo::set - HDicDBName value captured [%s]", hdicdbname.chars());
 #endif
-		return TRUE;
-	}
+    return TRUE;
+}
 
-	if (!strcmp(param,"DefEmo")) { //INAKI
-		if (!created) return FALSE;
-		t2u->set(param, val);
-		return TRUE;
-	}	//INAKI
+BOOL HTTSDo::setDefEmo(const CHAR* val){
+    if (!created) return FALSE;
+    t2u->set("DefEmo", val);
+    return TRUE;
+}
 
-	if (!strcmp(param,"DefIntEmo")) { //INAKI
-		if (!created) return FALSE;
-		t2u->set(param, val);
-		return TRUE;
-	}	//INAKI
+BOOL HTTSDo::setDefIntEmo(const CHAR* val){
+    if (!created) return FALSE;
+    t2u->set("DefIntEmo", val);
+    return TRUE;
+}
 
-	BOOL ret=FALSE;
 
-	if (t2u) ret = ret || t2u->set(param,val);  // $$$ casca
-
-	if (lingp) ret = ret || lingp->set(param,val);
-
-	if (u2w) ret = ret || u2w->set(param,val);
-
-	return ret;
+BOOL HTTSDo::set( const CHAR* param, const CHAR* val ){
+	if (t2u && t2u->set(param,val)){ return TRUE; }
+	if (lingp && lingp->set(param,val)){ return TRUE; }
+	if (u2w && u2w->set(param,val)){ return TRUE;}
+	return FALSE;
 }
 
 /**********************************************************/
 
-const CHAR* HTTSDo::get( const CHAR* param )
-{
-	if (!strcmp(param,"QueryMethods")) return
+Lang HTTSDo::getLang(){
+    return lang;
+}
+const CHAR* HTTSDo::getDefEmo(){ return emo; }
+const CHAR* HTTSDo::getDefIntEmo(){ return emoint; }
+const CHAR* HTTSDo::getMethod(){ return smethod; }
+const CHAR* HTTSDo::getPthModel(){ return lingp?lingp->get("PthModel"):(const CHAR *)modelpth; }
+const CHAR* HTTSDo::getProsDBName(){ return lingp?lingp->get("ProsDBName"):(const CHAR *)dbpros; }
+const CHAR* HTTSDo::getPowModel(){ return lingp?lingp->get("PowModel"):(const CHAR *)modelpow; }
+const CHAR* HTTSDo::getDurModel(){ return lingp?lingp->get("DurModel"):(const CHAR *)modeldur; }
+const CHAR* HTTSDo::getPauModel(){ return lingp?lingp->get("HDicDBName"):(const CHAR *)modelpau; }
+const CHAR* HTTSDo::getHDicDBName(){ return hdicdbname; }
+const CHAR* HTTSDo::getQueryMethods(){ return
+// XXX: if it's not defined this breaks!!
 #ifdef HTTS_METHOD_HTS
 		"[HTS]"    //INAKI
 #endif
-	;
-
-	if (!strcmp(param,"QueryLanguages")) return
+    ; }
+const CHAR* HTTSDo::getQueryLanguages(){ return
+// XXX: obtain this from langs.hpp
+// XXX: if both are defined this breaks!!
 #ifdef HTTS_LANG_ES
 		"[es]"
 #endif
 #ifdef HTTS_LANG_EU
 		"[eu]"
 #endif
-	;
+    ; }
 
-	if (!strcmp(param,"Lang")) return lang;
-	if (!strcmp(param,"DefEmo")) return emo;
-	if (!strcmp(param,"DefIntEmo")) return emoint;
-	if (!strcmp(param,"Method")) return smethod;
-	if (!strcmp(param,"PthModel")) return lingp?lingp->get(param):(const CHAR *)modelpth;
-	if (!strcmp(param,"ProsDBName")) return lingp?lingp->get(param):(const CHAR *)dbpros;
-	if (!strcmp(param,"PowModel")) return lingp?lingp->get(param):(const CHAR *)modelpow;
-	if (!strcmp(param,"DurModel")) return lingp?lingp->get(param):(const CHAR *)modeldur;
-	if (!strcmp(param,"PauModel")) return lingp?lingp->get(param):(const CHAR *)modelpau;
-	if (!strcmp(param,"HDicDBName")) return hdicdbname;
-
-	const CHAR *ret = NULL;
 #ifdef HTTS_METHOD_HTS //INAKI
-	if(hts){
-		if(!strcmp(param,"SRate")){
-			ret=strdup("16000");
-			return ret;
-		}
-	}
+uint HTTSDo::getSRate(){ return 16000; }
 #endif
 
+
+const CHAR* HTTSDo::get( const CHAR* param )
+{
+    const CHAR * ret;
 	if (u2w) ret = u2w->get(param); if (ret) return ret;
 	if (lingp) ret = lingp->get(param); if (ret) return ret;
 	if (t2u) ret = t2u->get(param); if (ret) return ret;
