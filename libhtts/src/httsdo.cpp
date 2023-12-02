@@ -151,9 +151,9 @@ HTTSDo::HTTSDo( VOID )
 
 /* El primero definido sera el idioma por defecto */
 #if defined(HTTS_LANG_EU)
-	lang = "eu";
+	lang = Lang::eu;
 #elif defined(HTTS_LANG_ES)
-	lang = "es";
+	lang = Lang::es;
 #endif
 
 /* El primero definido sera el metodo por defecto */
@@ -208,10 +208,8 @@ BOOL HTTSDo::create( VOID * db )
 	const CHAR* npth=NULL;
 	DOUBLE d=0;
 
-
-	ok=FALSE;
 #ifdef HTTS_LANG_EU
-	if (!strcmp(lang,"eu")) {
+	if (lang == Lang::eu) {
 		ok=TRUE;
 		lingp = new LangEU_LingP;
 		hdic = new LangEU_HDicDB;
@@ -219,7 +217,7 @@ BOOL HTTSDo::create( VOID * db )
 	}
 #endif
 #ifdef HTTS_LANG_ES
-	if (!strcmp(lang,"es")) {
+	if (lang == Lang::es) {
 		ok=TRUE;
 		lingp = new LangES_LingP;
 		hdic = new LangES_HDicDB;
@@ -228,8 +226,6 @@ BOOL HTTSDo::create( VOID * db )
 
 	}
 #endif
-
-	if (!ok) htts_error("Invalid language (%s)",(const CHAR *)lang);
 
 	if (!(lingp && t2u)) {numerror=1;goto error;}
 
@@ -271,7 +267,7 @@ BOOL HTTSDo::create( VOID * db )
 
 	/* cableamos un par de opciones... */
 	lingp->set("PhMap_jw2iu","n");
-	lingp->set("Lang",lang);
+	lingp->set("Lang",Lang2Str(lang)); // XXX
 
 
 	ackpending=FALSE;
@@ -523,7 +519,7 @@ BOOL HTTSDo::set( const CHAR* param, const CHAR* val )
 		if (created) return FALSE;
 		lang= val;
 #ifdef DEBUG_SHELL
-		htts_warn("HTTSDo::set - Language value captured [%s]", lang.chars());
+		htts_warn("HTTSDo::set - Language value captured [%s]", Lang2Str(l));
 #endif
 		return TRUE;
 	}

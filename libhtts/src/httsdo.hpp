@@ -120,6 +120,8 @@ Version  dd/mm/aa  Autor     Proposito de la edicion
 #include "tfil.hpp"
 #endif
 
+#include "langs.hpp"
+
 
 class HTTSDo {
 private:
@@ -159,7 +161,7 @@ private:
 	LingCotovia *ling_cotovia;
 #endif
 
-	String lang;
+	Lang lang;
 	String emo;
 	String emoint;
 	String smethod;
