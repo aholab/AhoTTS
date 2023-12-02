@@ -277,40 +277,7 @@ BOOL HTTSDo::create( VOID * db )
 	return TRUE;
 
 error:
-	switch (numerror){
-	case 1: htts_error("Error 1. Can't create HTTS module");
-	case 2: htts_error("Error 2. Can't create HTTS module");
-	case 3: htts_error("Error 3. Can't create HTTS module");
-	case 4: htts_error("Error 4. Can't create HTTS module");
-	case 5: htts_error("Error 5. Can't create HTTS module");
-	case 6: htts_error("Error 6. Can't create HTTS module");
-	case 7: htts_error("Error 7. Can't create HTTS module");
-	case 8: htts_error("Error 8. Can't create HTTS module");
-	case 9: htts_error("Error 9. Can't create HTTS module");
-	case 10: htts_error("Error 10. Can't create HTTS module");
-	case 11: htts_error("Error 11. Can't create HTTS module");
-	case 12: htts_error("Error 12. Can't create HTTS module");
-	case 13: htts_error("Error 13. Can't create HTTS module");
-	case 14: htts_error("Error 14. Can't create HTTS module");
-	case 15: htts_error("Error 15. Can't create HTTS module");
-	case 16: htts_error("Error 16. Can't create HTTS module");
-	case 17: htts_error("Error 17. Can't create HTTS module");
-	case 18: htts_error("Error 18. Can't create HTTS module");
-	case 19: htts_error("Error 19. Can't create HTTS module");
-	case 20: htts_error("Error 20. Can't create HTTS module");
-	case 21: htts_error("Error 21. Can't create HTTS module");
-	case 22: htts_error("Error 22. Can't create HTTS module");
-	case 23: htts_error("Error 23. Can't create HTTS module");
-	case 24: htts_error("Error 24. Can't create HTTS module");
-	case 25: htts_error("Error 25. Can't create HTTS module");
-	case 26: htts_error("Error 26. Can't create HTTS module");
-	case 27: htts_error("Error 27. Can't create HTTS module");
-	case 28: htts_error("Error 28. Can't create HTTS module");
-	case 29: htts_error("Error 29. Can't create HTTS module"); //INAKI
-	case 30: htts_error("Error 30. Can't create HTTS module"); //INAKI
-	case 31: htts_error("Error 31. Can't create HTTS module"); //INAKI
-	}
-
+    htts_error("Error {d}. Can't create HTTS module", numerror);
 	//ts_error("Can't create HTTS module");
 	destroy();
 	return FALSE;
