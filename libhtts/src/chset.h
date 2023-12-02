@@ -114,6 +114,8 @@ extern "C" {
 #define CS_ISOLatin1_ordf   '\252'
 #define CS_ISOLatin1_ordm   '\272'
 #define CS_ISOLatin1_deg    '\260'
+#define CS_ISOLatin1_lquote '\xAB'
+#define CS_ISOLatin1_rquote '\xBB'
 
 #define CS_S_ISOLatin1_atilde "\341"
 #define CS_S_ISOLatin1_etilde "\351"
@@ -134,6 +136,8 @@ extern "C" {
 #define CS_S_ISOLatin1_ordf   "\252"
 #define CS_S_ISOLatin1_ordm   "\272"
 #define CS_S_ISOLatin1_deg    "\260"
+#define CS_S_ISOLatin1_lquote '\xAB'
+#define CS_S_ISOLatin1_rquote '\xBB'
 
 
 #define CS_atilde CS_ISOLatin1_atilde
@@ -155,6 +159,8 @@ extern "C" {
 #define CS_ordf   CS_ISOLatin1_ordf
 #define CS_ordm   CS_ISOLatin1_ordm
 #define CS_deg    CS_ISOLatin1_deg
+#define CS_lquote CS_ISOLatin1_lquote
+#define CS_rquote CS_ISOLatin1_rquote
 
 #define CS_S_atilde CS_S_ISOLatin1_atilde
 #define CS_S_etilde CS_S_ISOLatin1_etilde
@@ -175,6 +181,8 @@ extern "C" {
 #define CS_S_ordf   CS_S_ISOLatin1_ordf
 #define CS_S_ordm   CS_S_ISOLatin1_ordm
 #define CS_S_deg    CS_S_ISOLatin1_deg
+#define CS_S_lquote CS_ISOLatin1_lquote
+#define CS_S_rquote CS_ISOLatin1_rquote
 
 /******************************************************************/
 
