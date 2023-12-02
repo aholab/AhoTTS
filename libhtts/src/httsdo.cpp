@@ -645,7 +645,7 @@ const CHAR* HTTSDo::get( const CHAR* param )
 /**********************************************************/
 //inaki
 //devuelve número de muestras sintetizadas y las almacena en short **samples
-int HTTSDo::synthesize_do_next_sentence( const CHAR *lang, short **samples){
+int HTTSDo::synthesize_do_next_sentence(short **samples){
 	String labels_string="";
 	int num_muestras=0;
 	Utt* u=NULL;
@@ -667,17 +667,15 @@ int HTTSDo::synthesize_do_next_sentence( const CHAR *lang, short **samples){
 	}
 	return num_muestras;
 	//*out=strdup(Silabificado);
-	
 }
 /**********************************************************/
 /**********************************************************/
 //inaki
-BOOL HTTSDo::synthesize_do_input( const CHAR *str, const CHAR *lang , BOOL InputIsFile /*=FALSE*/, const CHAR *data_path){
+BOOL HTTSDo::synthesize_do_input( const CHAR *str, BOOL InputIsFile /*=FALSE*/, const CHAR *data_path){
 
 	assert(created);
 	strcpy(DataPath, data_path);
 	//para euskera y castellano usamos código ahoTTS
-	
 		assert(t2u);
 		INT ret=t2u->input(str);
 		flushbuf++;
@@ -700,9 +698,6 @@ BOOL HTTSDo::synthesize_do_input( const CHAR *str, const CHAR *lang , BOOL Input
 		}
 
 		return TRUE;
-	
-
-	
 }
 
 
