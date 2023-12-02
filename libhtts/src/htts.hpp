@@ -86,11 +86,43 @@ Version  dd/mm/aa  Autor     Proposito de la edicion
 #include "tdef.h"
 #include "htts_cfg.h"
 
-/**********************************************************/
+#include "lingp.hpp"
+#include "u2w.hpp"
 
 #ifdef HTTS_INTERFACE_WAVEMARKS
 #include "mark.hpp"
 #endif
+
+#ifdef HTTS_DIPHONE
+#include "p2d.hpp"
+#include "dphdb.hpp"
+#endif
+
+#ifdef HTTS_METHOD_FORMANT
+#include "p2f.hpp"
+#endif
+#ifdef HTTS_METHOD_CORPUS
+#include "corpus.hpp" //INAKI
+#endif
+#ifdef HTTS_METHOD_HTS
+#include "hts.hpp"
+#endif
+
+
+
+
+#ifdef USE_TOKENIZER
+#include "t2l.hpp"
+#include "hdic.hpp"
+#else
+#include "t2u.hpp"
+#include "tfil.hpp"
+#endif
+
+#include "langs.hpp"
+
+
+/**********************************************************/
 
 #ifdef HTTS_METHVARS
 extern BOOL __htts_method_formant;
@@ -110,40 +142,99 @@ enum { HTTS_CB_NOCALL=0, HTTS_CB_CALL1=1, HTTS_CB_BLOCKCALL=-1 };
 
 /**********************************************************/
 
-class HTTSDo;
-
 class HTTS_DB;
 
 /**********************************************************/
 
-class HTTS {
+class HTTS{
 private:
-	HTTSDo* data;
+	BOOL created;
+	INT flushbuf;
+#ifdef USE_TOKENIZER
+	TextToList *t2u;
+	HDicDB * hdic;
+	String hdicdbname;
+#else
+	T2ULst * t2u;
+	TxtFilt * tfil;
+	String sustfn;
+#endif
+	LingP * lingp;
+	Utt2Wav * u2w;
+	Utt * utt;
+	BOOL localdb;
+#ifdef HTTS_DIPHONE
+	Ph2Dph * p2d;
+	DphDB * dphdb;
+	String dbname;
+	String dbmode;
+#endif
+#ifdef HTTS_METHOD_FORMANT
+	Ph2FormP *p2f;
+	BOOL formant;
+#endif
+#ifdef HTTS_METHOD_CORPUS
+	BOOL corpus;
+#endif
+#ifdef HTTS_METHOD_HTS
+	BOOL hts;
+	char DataPath[1024];
+#endif
+#ifdef HTTS_LANG_GL
+	LingCotovia *ling_cotovia;
+#endif
+
+	Lang lang;
+	String emo;
+	String emoint;
+	String smethod;
+	String modelpth;
+	String dbpros;
+	String modelpow;
+	String modeldur;
+	String modelpau;
+
+	BOOL ackpending;
+
+	BOOL advance( VOID );
+	VOID destroy( VOID );
 
 public:
 	HTTS( VOID );
 	virtual ~HTTS( );
-	BOOL create( VOID );
-	BOOL create( HTTS_DB *db );
-	HTTS_DB *getDB(VOID);
+	BOOL create( VOID *db=NULL );
+	VOID *getDB(VOID);
 
 	INT input( const CHAR * str );
 	BOOL input( CHAR ch );
 	BOOL flush( VOID );
-	/************/
-	//inaki
-	INT input_multilingual( const CHAR * str, const CHAR *lang , const CHAR *data_path, BOOL InputIsFile = FALSE );
-	int output_multilingual(const CHAR *lang, short **samples);
-	//const DOUBLE * output_multilingual();
-	//BOOL outack_multilingual();
-	/***********/
-	const DOUBLE* output( INT *len, BOOL *flush=NULL, INT mode=0, VOID *cb_n=0 );
+	const DOUBLE* output( INT *len, BOOL *flush, INT mode, VOID *cb_n );
 	BOOL isFlush( VOID );
 
+
+	/**************/
+	//inaki
+	BOOL synthesize_do_input( const CHAR *str, BOOL InputIsFile, const CHAR *data_path);
+	int synthesize_do_next_sentence( short **samples);//procesa frase
+    int output_multilingual(short **samples);
+    BOOL input_multilingual( const CHAR * str, const CHAR *data_path ,BOOL InputIsFile);
+#ifdef HTTS_LANG_FEST
+	int str2num(const char * cadena);
+	char *num2str(int num);
+	//Variables necesarias
+	EST_TokenStream ts;
+	LISP eou_tree;
+	LISP stream;
+	//friend LISP tts_chunk_stream_aho(EST_TokenStream &ts,
+	//	      LISP eou_tree,
+	//	      LISP utt, String &label_string, Utt2Wav * u2w);
+#endif
+
+	/*************/
 #ifdef HTTS_INTERFACE_WAVEMARKS
 	const Mark1DList & mrkget( VOID );
 	VOID mrkdel( VOID );
-	BOOL outack( INT n, BOOL mrkdel=TRUE );
+	BOOL outack( INT n, BOOL mrkdel );
 #else
 	BOOL outack( INT n );
 #endif
@@ -154,14 +245,42 @@ public:
 
 	virtual VOID callback( VOID * /*cb_n*/ ) { };
 
+    BOOL setLang(Lang l);
+    BOOL setMethod(const CHAR* val);
+    BOOL setPthModel(const CHAR* val);
+    BOOL setProsDBName(const CHAR* val);
+    BOOL setPowModel(const CHAR* val);
+    BOOL setDurModel(const CHAR* val);
+    BOOL setPauModel(const CHAR* val);
+    BOOL setHDicDBName(const CHAR* val);
+    BOOL setDefEmo(const CHAR* val);
+    BOOL setDefIntEmo(const CHAR* val);
+#ifdef HTTS_DIPHONE
+    BOOL setDBName(const CHAR* val);
+    BOOL setDBLoadMode(const CHAR* val);
+#endif
+
+    // XXX: we have to remove this
 	BOOL set( const CHAR* param, const CHAR* val );
-	BOOL set( const CHAR* param, DOUBLE val );
-	BOOL set( const CHAR* param, INT val );
+
+    Lang getLang();
+    const CHAR* getDefEmo();
+    const CHAR* getDefIntEmo();
+    const CHAR* getMethod();
+    const CHAR* getPthModel();
+    const CHAR* getProsDBName();
+    const CHAR* getPowModel();
+    const CHAR* getDurModel();
+    const CHAR* getPauModel();
+    const CHAR* getHDicDBName();
+    const CHAR* getQueryMethods();
+    const CHAR* getQueryLanguages();
+#ifdef HTTS_METHOD_HTS
+    uint getSRate();
+#endif
+    // XXX: we have to remove this
 	const CHAR* get( const CHAR* param );
-	const CHAR* get( const CHAR* param, DOUBLE *val );
-
-	DOUBLE getSRate( VOID );
-
+public:
 	static INT16 convDOUBLE2INT16( DOUBLE d );
 	static INT16 convDOUBLE2INT16_clip( DOUBLE d );
 	static VOID convDOUBLE2INT16( DOUBLE d[], INT16 i16[], INT n );

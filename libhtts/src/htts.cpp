@@ -1,33 +1,31 @@
 /******************************************************************************/
 /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-AhoTTS: A Text-To-Speech system for Basque* and Spanish*,
-developed by Aholab Signal Processing Laboratory at the
-University of the Basque Country (UPV/EHU). Its acoustic engine is based on
-hts_engine' and it uses AhoCoder* as vocoder.
+AhoTTS: A Text-To-Speech system for Basque*, developed by Aholab 
+Signal Processing Laboratory at the University of the Basque Country (UPV/EHU). 
+Its acoustic engine is based on hts_engine** and it uses AhoCoder'' as vocoder.
 (Read COPYRIGHT_and_LICENSE_code.txt for more details)
 --------------------------------------------------------------------------------
 
-Linguistic processing for Basque and Spanish, Vocoder (Ahocoder) and
+*Linguistic processing for Basque and Spanish, Vocoder (Ahocoder) and
 integration by Aholab UPV/EHU.
 
-*AhoCoder is an HNM-based vocoder for Statistical Synthesizers
+''AhoCoder is an HNM-based vocoder for Statistical Synthesizers
 http://aholab.ehu.es/ahocoder/
 
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 Copyrights:
-	1997-2015  Aholab Signal Processing Laboratory, University of the Basque
+	*1997-2015  Aholab Signal Processing Laboratory, University of the Basque
 	 Country (UPV/EHU)
-    *2011-2015 Aholab Signal Processing Laboratory, University of the Basque
+    	''2011-2015 Aholab Signal Processing Laboratory, University of the Basque
 	  Country (UPV/EHU)
 
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 Licenses:
-	GPL-3.0+
 	*GPL-3.0+
-	'Modified BSD (Compatible with GNU GPL)
+	''Modified BSD (Compatible with GNU GPL)
 
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -55,8 +53,8 @@ GPL-3.0+
 /*
 (C) 1997 TSR/Aholab - ETSII/IT Bilbao (UPV/EHU)
 
-Nombre fuente................ tts_io.cpp
-Nombre paquete............... Sinte
+Nombre fuente................ htts.cpp
+Nombre paquete............... aHoTTS
 Lenguaje fuente.............. C++
 Estado....................... -
 Dependencia Hard/OS.......... -
@@ -67,52 +65,135 @@ Codificacion................. Borja Etxebarria
 
 Version  dd/mm/aa  Autor     Proposito de la edicion
 -------  --------  --------  -----------------------
-1.0.1    02/10/11  inaki     add synthesize API
+2.0.3	 02/10/11  Inaki     add synthesize API (y soporte para idiomas festival)
+2.0.2	 15/12/10  Inaki     integrate HTS Synthesis Method
+2.0.1	 03/10/07  Inaki     integrate Corpus Synthesis Method
+2.0.0    27/06/03  lander    integrate HNS Synthesis Module
+1.0.1    22/06/00  richie    minor bugfix
 1.0.0    31/01/00  borja     codefreeze aHoTTS v1.0
 0.0.0    06/02/98  borja     Codificacion inicial.
 
 ======================== Contenido ========================
 <DOC>
-Interfaz de usuario del modulo de sintesis HTTS.
-
-
-Conjunto de parametros SET/GET soportados:
-------------------------------------------
-Ocupa bastante, ver el fichero setget.txt.
 </DOC>
 ===========================================================
 */
 /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/
 /**********************************************************/
 
+#define DEBUG_SHELLx
+
 #include <assert.h>
+#include "uti.h"
+
 #include "htts.hpp"
-#include "httsdo.hpp"
 #include "httsmsg.h"
+
+#ifdef HTTS_LANG_ES
+#include "es_lingp.hpp"
+#include "es_hdic.hpp"
+// #include "es_tex.hpp"  // $$$ aun no hay tokenizer para castellano...
+#include "es_t2l.hpp"  // $$$ EVA YA tenemos tokenizer en castellano
+
+
+#endif
+
+#ifdef HTTS_LANG_EU
+#include "eu_lingp.hpp"
+#include "eu_hdic.hpp"
+#include "eu_t2l.hpp"
+#endif
+
+
+#ifdef HTTS_METHOD_HTS
+#include "hts.hpp"
+#endif
+
+
+/**********************************************************/
+
+#ifdef HTTS_METHVARS
+#ifdef HTTS_METHOD_HTS           //INAKI
+BOOL __htts_method_hts=TRUE;
+#else
+BOOL __htts_method_hts=FALSE;
+#endif
+#endif
+
+/**********************************************************/
+
+#ifdef HTTS_LANGVARS
+#ifdef HTTS_LANG_ES
+BOOL __htts_lang_es=TRUE;
+#else
+BOOL __htts_lang_es=FALSE;
+#endif
+#ifdef HTTS_LANG_EU
+BOOL __htts_lang_eu=TRUE;
+#else
+BOOL __htts_lang_eu=FALSE;
+#endif
+#endif
+
 
 /*<DOC>*/
 /**********************************************************/
 /* El constructor de la clase no tiene parametros. El usuario
 debe llamar al metodo create() para inicializar la clase.
 Antes de efectuar el create() se pueden configurar algunos
-parametros con el metodo set() */
-
+parametros con los métodos set correspondientes */
 HTTS::HTTS( VOID )
-/*</DOC>*/
 {
-	data = new HTTSDo;
-	assert(data);
+	created=FALSE;
+	flushbuf=0;
+	hdic=NULL;
+	t2u=NULL;
+	lingp=NULL;
+	utt=NULL;
+	u2w=NULL;
+
+	localdb=TRUE;
+
+/* El primero definido sera el idioma por defecto */
+#if defined(HTTS_LANG_EU)
+	lang = Lang::eu;
+#elif defined(HTTS_LANG_ES)
+	lang = Lang::es;
+#endif
+
+/* El primero definido sera el metodo por defecto */
+#if defined(HTTS_METHOD_HTS) //INAKI
+	smethod = "HTS";
+#endif
+
+	hdicdbname = "hdic";
+	modelpth="";
+	dbpros="";
+	modelpow="";
+	modeldur="";
+	modelpau="";
 }
 
-/*<DOC>*/
 /**********************************************************/
-/* Destructor de la clase */
 
 HTTS::~HTTS( )
-/*</DOC>*/
 {
-	if (data) delete data;
+	destroy();
 }
+
+/**********************************************************/
+
+VOID HTTS::destroy( VOID )
+{
+#define DELIT(x) if (x) { delete x; x=NULL; }
+	DELIT(hdic);
+	DELIT(t2u);
+	DELIT(lingp);
+	DELIT(utt);
+	DELIT(u2w);
+}
+
+/**********************************************************/
 
 /*<DOC>*/
 /**********************************************************/
@@ -121,42 +202,103 @@ si la clase se ha inicializado correctamente, o FALSE en
 caso de error.
 
 El usuario debe llamar a esta funcion antes de empezar a
-hacer uso de la clase. Antes del create() se puede llamar
-a set() con algunos parametros.
+hacer uso de la clase. Antes del create() se pueden
+inicializar algunos parametros.
 
 Existe una version alternativa create(db) que recibe una
 base de datos externa. */
-
-BOOL HTTS::create( VOID )
-/*</DOC>*/
+BOOL HTTS::create( VOID * db )
 {
-	return data->create();
+	int numerror=0;
+
+	assert(!created);
+
+	assert(!hdic);
+	assert(!t2u);
+	assert(!lingp);
+	assert(!utt);
+	assert(!u2w);
+
+	BOOL ok;
+	const CHAR* npth=NULL;
+	DOUBLE d=0;
+
+#ifdef HTTS_LANG_EU
+	if (lang == Lang::eu) {
+		ok=TRUE;
+		lingp = new LangEU_LingP;
+		hdic = new LangEU_HDicDB;
+		t2u = new LangEU_TextToList;
+	}
+#endif
+#ifdef HTTS_LANG_ES
+	if (lang == Lang::es) {
+		ok=TRUE;
+		lingp = new LangES_LingP;
+		hdic = new LangES_HDicDB;
+		t2u = new LangES_TextToList;  // $$$ EVA como YA hay tokenizer ES ...
+//		t2u = new LangEU_TextToList;  // $$$ ...usamos el tokenizer EU
+
+	}
+#endif
+
+	if (!(lingp && t2u)) {numerror=1;goto error;}
+
+	if (!hdic)  goto error;
+
+
+	ok=FALSE;
+#ifdef HTTS_METHOD_HTS //INAKI
+	if (!strcmp(smethod,"HTS")) {
+		ok=TRUE;
+		utt = new UttPh;
+		u2w = new HTS_U2W;
+		if (!(utt&&u2w))  {numerror=31;goto error;}
+		hts=TRUE;
+	}
+	else
+		hts =FALSE;
+#endif
+	if (!ok) htts_error("Invalid synthesis method (%s)",(const CHAR*)smethod);
+
+	hdic->create(hdicdbname);
+
+	//$$$ Richie added. Muru Changed HDicDBName -> HDicDB
+	lingp->set("HDicDB",hdicdbname);
+
+	if (!lingp->create())  {numerror=15;goto error;}
+	if (!utt->create())  {numerror=16;goto error;}
+	((UttWS*)utt)->setHDicDB(hdic);
+	if (!t2u->create((UttWS*)utt,hdic))  {numerror=17;goto error;}
+
+#ifdef HTTS_METHOD_HTS
+	if (!strcmp(smethod,"HTS")) if (! ((HTS_U2W*)u2w)->create(lingp->get("Lang")))  {numerror=32;goto error;} //INAKI
+#endif
+
+/* Configurar pitch nominal si es posible, si no, pitch 100Hz */
+	/*npth=get("NominalPth");
+	d=npth?atof(npth):0;
+	if (!set("PthMean",d?npth:"100"))  {numerror=28;goto error;}*/
+
+	/* cableamos un par de opciones... */
+	lingp->set("PhMap_jw2iu","n");
+	lingp->set("Lang",Lang2Str(lang)); // XXX
+
+
+	ackpending=FALSE;
+	created=TRUE;
+	flushbuf=0;
+
+	return TRUE;
+
+error:
+    htts_error("Error {d}. Can't create HTTS module", numerror);
+	//ts_error("Can't create HTTS module");
+	destroy();
+	return FALSE;
 }
 
-/*<DOC>*/
 /**********************************************************/
-/* Inicializacion interna de la clase. {devuelve} TRUE
-si la clase se ha inicializado correctamente, o FALSE en
-caso de error.
-
-El usuario debe llamar a esta funcion antes de empezar a
-hacer uso de la clase. Antes del create() se puede llamar
-a set() con algunos parametros.
-
-Este metodo recibe una base de datos externa {db} obtenida
-de otro modulo HTTS previamente creado, para permitir asi
-que varios modulos HTTS compartan una misma base de datos.
-
-Los objetos HTTS inicializados con este metodo solo leen la base
-de datos. El objeto inicial del que se ha obtenido la base de
-datos debe existir siempre mientras exista algun otro objeto que
-utilice su base de datos. */
-
-BOOL HTTS::create( HTTS_DB *db )
-/*</DOC>*/
-{
-	return data->create((VOID*)db);
-}
 
 /*<DOC>*/
 /**********************************************************/
@@ -165,12 +307,82 @@ un modulo HTTS. El objeto debe estar ya inicializado
 (el metodo create() ya tiene que haberse ejecutado. Esta
 base de datos puede ser utilizada/compartida por otros
 modulos HTTS (ver metodos create()). */
-
-HTTS_DB *HTTS::getDB(VOID)
-/*</DOC>*/
+VOID *HTTS::getDB(VOID)
 {
-	return (HTTS_DB*)(data->getDB());
+#ifdef HTTS_THREADSAFE
+	// si no se puede obtener el modo o es distinto de Preload, no es thread-safe
+		//const CHAR *s=dphdb->get("DBLoadMode");
+		//if (!s || strcmp(s,"Preload")) return NULL;
+
+#endif
+		//return (VOID*)dphdb;
+	//}
+	// si es de formantes o no esta creada la base de datos, NULL
+	return NULL;
 }
+
+/**********************************************************/
+
+BOOL HTTS::advance( VOID )
+{
+	BOOL flush;
+	Utt* u;
+	const DOUBLE* vec;
+	INT len;
+	BOOL ret;
+
+	vec = u2w->output(&len,&flush);
+	if (vec||flush) return TRUE;  // si u2w genera salida valida, OK
+
+/*... si no hay mas tramas de formantes o si es el sinte de
+difonemas, intentamos obtener una nueva utt de t2u, y sintetizarla.
+pero primero, borramos la lista vieja del primer modulo (t2u)*/
+
+	if (ackpending) {  // solo si hace falta
+		t2u->outack();
+		ackpending= FALSE;
+	}
+
+	/* manejamos el buffer de flushes {flushbuf}. Lo necesitamos porque
+	los flushes no llegan a t2u mientras se esta procesando una frase,
+	ya que el ack() a este modulo se envia cuando se termina
+	con la frase en los demas modulos, y no tras el tu2->output() */
+	while (flushbuf>0) {
+		if (t2u->flush()) flushbuf--; else break;
+	}
+
+	u = t2u->output(&flush);
+	if (u) {  // estupendo, obtuvimos una utt
+		lingp->utt_lingp(u);  // la procesamos
+#ifdef HTTS_METHOD_HTS
+			if(hts){
+				ret=u2w->input(u);
+			}
+			else{
+#endif
+
+#ifdef HTTS_METHOD_HTS
+		}
+#endif
+
+		assert(ret);
+		ackpending = TRUE;
+		return TRUE;
+	}
+	if (flush) {  // estupendo, obtuvimos un flush
+			ret=u2w->flush();
+		assert(ret);
+		ackpending = TRUE;
+		return TRUE;
+	}
+
+	(void)ret;
+	// si llegamos aqui, no hemos avanzado nada, :(
+	return FALSE;
+}
+
+/**********************************************************/
+
 
 /*<DOC>*/
 /**********************************************************/
@@ -191,12 +403,16 @@ sintacticas. Para asegurar que el sintetizador se vea forzado a
 generar salida de audio para TODO el texto que ha aceptado, se
 puede llamar a la funcion flush(). Esto asegura un purgado
 interno completo. */
-
 INT HTTS::input( const CHAR * str )
-/*</DOC>*/
 {
-	return data->input(str);
+	assert(created);
+	assert(t2u);
+	INT ret=t2u->input(str);
+	advance();
+	return ret;
 }
+
+/**********************************************************/
 
 /*<DOC>*/
 /**********************************************************/
@@ -216,42 +432,16 @@ sintacticas. Para asegurar que el sintetizador se vea forzado a
 generar salida de audio para TODO el texto que ha aceptado, se
 puede llamar a la funcion flush(). Esto asegura un purgado
 interno completo. */
-
 BOOL HTTS::input( CHAR ch )
-/*</DOC>*/
 {
-	return data->input(ch);
+	assert(created);
+	assert(t2u);
+	BOOL ret=t2u->input(ch);
+	advance();
+	return ret;
 }
 
-/*<DOC>*/
 /**********************************************************/
-/* Interfaz de entrada de texto. El usuario envia en {ch}
-un caracter de texto a anyadir a la cadena a sintentizar.
-La funcion {devuelve} TRUE si acepta el caracter, FALSE si
-no lo acepta.
-
-La funcion puede no aceptar mas caracteres porque tiene los
-bufferes internos llenos, y el usuario debe llamar a output()
-para obtener la salida disponible y hacer sitio.
-
-La interfaz de entrada input() no tiene porque generar una
-salida de audio directamente. El objeto HTTS va acumulando texto
-hasta que compone una frase completa siguiendo ciertas reglas
-sintacticas. Para asegurar que el sintetizador se vea forzado a
-generar salida de audio para TODO el texto que ha aceptado, se
-puede llamar a la funcion flush(). Esto asegura un purgado
-interno completo. */
-
-BOOL HTTS::input_multilingual( const CHAR * str, const CHAR *lang , const CHAR *data_path ,BOOL InputIsFile) //inaki
-/*</DOC>*/
-{
-    return data->synthesize_do_input( str, lang, InputIsFile, data_path);
-}
-
-int HTTS::output_multilingual(const char * lang, short **samples){
-		return data->synthesize_do_next_sentence(lang, samples);
-}
-
 
 /*<DOC>*/
 /**********************************************************/
@@ -265,10 +455,14 @@ interno completo. El caso de que el flush() se acepte, se
 {devuelve} TRUE. En caso de que no se acepte, se {devuelve} FALSE.*/
 
 BOOL HTTS::flush( VOID )
-/*</DOC>*/
 {
-	return data->flush();
+	assert(created);
+	flushbuf++;
+	advance();
+	return TRUE;
 }
+
+/**********************************************************/
 
 /*<DOC>*/
 /**********************************************************/
@@ -342,12 +536,32 @@ output() por tanto siempre devuelve una salida no nula (sean
 muestras o flushes) si el usuario envia texto de entrada, o el
 programa quedara bloqueado si no se envia una entrada valida!
 */
-
 const DOUBLE* HTTS::output( INT *len, BOOL *flush, INT mode, VOID *cb_n )
-/*</DOC>*/
 {
-	return data->output(len,flush,mode,cb_n);
+	const DOUBLE *p = NULL;
+
+	assert(created);
+	assert(u2w);
+	while (1) {
+		BOOL flu=FALSE;
+		p = u2w->output(len,&flu);  // leer salida
+		if (flush) *flush=flu;  // *flush puede ser NULL, por eso usamos flu temporalmente
+
+		if (p || flu) break;  // si hay salida valida, return
+		// si no hay salida valida:
+		if (advance()) continue;  // si hay flujo entre modulos => repite
+		// si no, nada que hacer...
+		if (mode != HTTS_CB_NOCALL) {  // ...salvo llamar al callback y repetir
+			callback(cb_n);
+			if (mode==HTTS_CB_CALL1) mode=HTTS_CB_NOCALL; // cancelar el callback si esta en modo de 1-vez
+			continue;
+		}
+		break;
+	}
+	return p;
 }
+
+/**********************************************************/
 
 /*<DOC>*/
 /**********************************************************/
@@ -356,24 +570,30 @@ En el parametro {flush} de la funcion output() se puede
 obtener el mismo resultado que {devuelve} esta funcion. */
 
 BOOL HTTS::isFlush( VOID )
-/*</DOC>*/
 {
-	return data->isFlush();
+	assert(created);
+	assert(u2w);
+	return u2w->isFlush();
 }
+
+/**********************************************************/
+
 
 /*<DOC>*/
 /**********************************************************/
 /* {devuelve} la lista de marcas disponibles hasta el momento.
 Cuando se hace outack() el usuario puede indicar que se borren
 si ya las ha procesado. */
-
 #ifdef HTTS_INTERFACE_WAVEMARKS
 const Mark1DList & HTTS::mrkget( VOID )
-/*</DOC>*/
 {
-	return data->mrkget();
+	assert(created);
+	assert(u2w);
+	return u2w->mrkget();
 }
 #endif
+
+/**********************************************************/
 
 /*<DOC>*/
 /**********************************************************/
@@ -387,14 +607,16 @@ borrarlas con esta funcion, o si no pasar el parametro
 {mrkdel}==TRUE a la funcion outack() (es el valor por defecto
 de dicho parametro en caso de que no se indique), si no
 las marcas se van acumulando hasta el infinito! */
-
 #ifdef HTTS_INTERFACE_WAVEMARKS
 VOID HTTS::mrkdel( VOID )
-/*</DOC>*/
 {
-	data->mrkdel();
+	assert(created);
+	assert(u2w);
+	u2w->mrkdel();
 }
 #endif
+
+/**********************************************************/
 
 /*<DOC>*/
 /**********************************************************/
@@ -419,18 +641,21 @@ toma valor TRUE.  */
 
 #ifdef HTTS_INTERFACE_WAVEMARKS
 BOOL HTTS::outack( INT n, BOOL mrkdel )
-/*</DOC>*/
 {
-	return data->outack(n,mrkdel);
+	assert(created);
+	assert(u2w);
+	return u2w->outack(n,mrkdel);
 }
-/*<DOC>*/
 #else
 BOOL HTTS::outack( INT n )
-/*</DOC>*/
 {
-	return data->outack(n);
+	assert(created);
+	assert(u2w);
+	return u2w->outack(n);
 }
 #endif
+
+/**********************************************************/
 
 /*<DOC>*/
 /**********************************************************/
@@ -454,103 +679,282 @@ evento hemos llegado ya. */
 
 #ifdef HTTS_TIMEEVS
 INT HTTS::get_timeev( VOID )
-/*</DOC>*/
 {
-	return data->get_timeev();
+	assert(created);
+	assert(u2w);
+	return u2w->get_timeev();
 }
 #endif
 
+/**********************************************************/
+
 /*<DOC>*/
 /**********************************************************/
-/* Permite configurar el parametro {param} con el valor {val}.
+/* Permite configurar parametros con el valor {val}.
 En caso de que el parametro no sea reconocido, no pueda
 configurarse en dicho momento, o {val} no sea valido, la
 funcion {devuelve} FALSE. Si el parametro se configura
-correctamente {devuelve} TRUE.
-Hay una version con {val} de tipo DOUBLE y otra con INT.
+correctamente {devuelve} TRUE. */
 
-Ver el apartado "SET/GET soportados" para informacion sobre
-los parametros que se pueden enviar. */
-
-BOOL HTTS::set( const CHAR* param, const CHAR* val )
-/*</DOC>*/
-{
-	return data->set(param,val);
+BOOL HTTS::setLang(Lang l){
+    if (created) return FALSE;
+    lang = l;
+#ifdef DEBUG_SHELL
+		htts_warn("HTTS::set - Language value captured [%s]", Lang2Str(l));
+#endif
+    return TRUE;
 }
+
+BOOL HTTS::setMethod(const CHAR* val){
+    if (created) return FALSE;
+    smethod= val;
+#ifdef DEBUG_SHELL
+    htts_warn("HTTS::set - Method value captured [%s]", smethod.chars());
+#endif
+    return TRUE;
+}
+
+BOOL HTTS::setPthModel(const CHAR* val){
+    if (created) return FALSE;
+    modelpth= val;
+#ifdef DEBUG_SHELL
+    htts_warn("HTTS::set - PthModel value captured [%s]", modelpth.chars());
+#endif
+    return TRUE;
+}
+
+BOOL HTTS::setProsDBName(const CHAR* val){
+    if (created) return FALSE;
+    dbpros= val;
+#ifdef DEBUG_SHELL
+    htts_warn("HTTS::set - ProsDBName value captured [%s]", dbpros.chars());
+#endif
+    return TRUE;
+}
+
+BOOL HTTS::setPowModel(const CHAR* val){
+    if (created) return FALSE;
+    modelpow= val;
+#ifdef DEBUG_SHELL
+    htts_warn("HTTS::set - PowModel value captured [%s]", modelpow.chars());
+#endif
+    return TRUE;
+}
+
+BOOL HTTS::setDurModel(const CHAR* val){
+    if (created) return FALSE;
+    modeldur= val;
+#ifdef DEBUG_SHELL
+    htts_warn("HTTS::set - DurModel value captured [%s]", modeldur.chars());
+#endif
+    return TRUE;
+}
+
+BOOL HTTS::setPauModel(const CHAR* val){
+    if (created) return FALSE;
+    modelpau= val;
+#ifdef DEBUG_SHELL
+    htts_warn("HTTS::set - PauModel value captured [%s]", modelpau.chars());
+#endif
+    return TRUE;
+}
+
+#ifdef HTTS_DIPHONE
+BOOL HTTS::setDBName(const CHAR* val){
+    if (created) return FALSE;
+    dbname= val;
+#ifdef DEBUG_SHELL
+    htts_warn("HTTS::set - DBName value captured [%s]", dbname.chars());
+#endif
+    return TRUE;
+}
+#endif
+
+#ifdef HTTS_DIPHONE
+BOOL HTTS::setDBLoadMode(const CHAR* val){
+    if (created) return FALSE;
+    dbmode= val;
+#ifdef DEBUG_SHELL
+    htts_warn("HTTS::set - DBLoadMode value captured [%s]", dbmode.chars());
+#endif
+    return TRUE;
+}
+#endif
+
+BOOL HTTS::setHDicDBName(const CHAR* val){
+    if (created) return FALSE;
+    hdicdbname= val;
+#ifdef DEBUG_SHELL
+    htts_warn("HTTS::set - HDicDBName value captured [%s]", hdicdbname.chars());
+#endif
+    return TRUE;
+}
+
+BOOL HTTS::setDefEmo(const CHAR* val){
+    if (!created) return FALSE;
+    t2u->set("DefEmo", val);
+    return TRUE;
+}
+
+BOOL HTTS::setDefIntEmo(const CHAR* val){
+    if (!created) return FALSE;
+    t2u->set("DefIntEmo", val);
+    return TRUE;
+}
+
+
+// XXX: REMOVE ME
+BOOL HTTS::set( const CHAR* param, const CHAR* val ){
+	if (t2u && t2u->set(param,val)){ return TRUE; }
+	if (lingp && lingp->set(param,val)){ return TRUE; }
+	if (u2w && u2w->set(param,val)){ return TRUE;}
+	return FALSE;
+}
+
+/**********************************************************/
 
 /*<DOC>*/
 /**********************************************************/
-/* Version de set() con {val} de tipo DOUBLE. */
-
-BOOL HTTS::set( const CHAR* param, DOUBLE val )
-/*</DOC>*/
-{
-	CHAR buf[20];
-	sprintf(buf,"%g",val);
-	return data->set(param,buf);
-}
-
-
-/*<DOC>*/
-/**********************************************************/
-/* Version de set() con {val} de tipo INT. */
-
-BOOL HTTS::set( const CHAR* param, INT val )
-/*</DOC>*/
-{
-	CHAR buf[20];
-	sprintf(buf,"%ld",(long)val);
-	return data->set(param,buf);
-}
-
-/*<DOC>*/
-/**********************************************************/
-/* Este metodo {devuelve} una cadena con el valor actual del
-parametro {param}. En caso de que {param} no sea un parametro
-reconocido por el sintetizador, se {devuelve} NULL.
+/* Metodos que {devuelven} una cadena con el valor actual del
+parametro.
 
 La cadena devuelta es un valor interno. El usuario NO debe bajo
 ningun concepto modificarla. Llamadas posteriores a esta funcion
 borran el valor anterior.
+*/
 
-Ver el apartado "SET/GET soportados" para informacion sobre
-los parametros que se pueden enviar. */
+Lang HTTS::getLang(){
+    return lang;
+}
+const CHAR* HTTS::getDefEmo(){ return emo; }
+const CHAR* HTTS::getDefIntEmo(){ return emoint; }
+const CHAR* HTTS::getMethod(){ return smethod; }
+const CHAR* HTTS::getPthModel(){ return lingp?lingp->get("PthModel"):(const CHAR *)modelpth; }
+const CHAR* HTTS::getProsDBName(){ return lingp?lingp->get("ProsDBName"):(const CHAR *)dbpros; }
+const CHAR* HTTS::getPowModel(){ return lingp?lingp->get("PowModel"):(const CHAR *)modelpow; }
+const CHAR* HTTS::getDurModel(){ return lingp?lingp->get("DurModel"):(const CHAR *)modeldur; }
+const CHAR* HTTS::getPauModel(){ return lingp?lingp->get("HDicDBName"):(const CHAR *)modelpau; }
+const CHAR* HTTS::getHDicDBName(){ return hdicdbname; }
+const CHAR* HTTS::getQueryMethods(){ return
+// XXX: if it's not defined this breaks!!
+#ifdef HTTS_METHOD_HTS
+		"[HTS]"    //INAKI
+#endif
+    ; }
+const CHAR* HTTS::getQueryLanguages(){ return
+// XXX: obtain this from langs.hpp
+// XXX: if both are defined this breaks!!
+#ifdef HTTS_LANG_ES
+		"[es]"
+#endif
+#ifdef HTTS_LANG_EU
+		"[eu]"
+#endif
+    ; }
+
+#ifdef HTTS_METHOD_HTS //INAKI
+uint HTTS::getSRate(){ return 16000; }
+#endif
+
 
 const CHAR* HTTS::get( const CHAR* param )
-/*</DOC>*/
 {
-	return data->get(param);
-}
-
-/**********************************************************/
-/* Como get(param) pero convierte el valor a DOUBLE y lo
-almacena donde apunta {val}. Si no es un DOUBLE, se escribe
-un 0. Tambien se {devuelve} el puntero a la cadena interna
-que almacena el valor, o NULL si no es un parametro
-reconocido (en cuyo caso {val} toma el valor 0). */
-
-const CHAR* HTTS::get( const CHAR* param, DOUBLE *val )
-/*</DOC>*/
-{
-	const CHAR *ret=data->get(param);
-	if (val) *val= ret?atof(ret) : 0;
+    const CHAR * ret;
+	if (u2w) ret = u2w->get(param); if (ret) return ret;
+	if (lingp) ret = lingp->get(param); if (ret) return ret;
+	if (t2u) ret = t2u->get(param); if (ret) return ret;
+// Por ahora hdic no tiene get
+//	if (hdic) ret = hdic->get(param); if (ret) return ret;
 	return ret;
 }
 
+/**********************************************************/
+/**********************************************************/
+//inaki
+//devuelve número de muestras sintetizadas y las almacena en short **samples
+int HTTS::synthesize_do_next_sentence(short **samples){
+	String labels_string="";
+	int num_muestras=0;
+	Utt* u=NULL;
+	BOOL flush=FALSE;
+	u = t2u->output(&flush);
+	if (u) {  // estupendo, obtuvimos una utt
+		ackpending = TRUE;
+		lingp->utt_lingp(u);  // la procesamos
+
+
+		//String labels_string_tmp;
+		((HTS_U2W*)u2w)->pho2hts((UttPh*)u, labels_string, TRUE);	//convertimos a labels
+		//labels_string+=labels_string_tmp;
+		t2u->outack();
+		//	u = t2u->output(&flush);
+		*samples=((HTS_U2W*)u2w)->xinput_labels(labels_string, &num_muestras);
+
+
+	}
+	return num_muestras;
+	//*out=strdup(Silabificado);
+}
+/**********************************************************/
+/**********************************************************/
+//inaki
+BOOL HTTS::synthesize_do_input( const CHAR *str, BOOL InputIsFile /*=FALSE*/, const CHAR *data_path){
+
+	assert(created);
+	strcpy(DataPath, data_path);
+	//para euskera y castellano usamos código ahoTTS
+		assert(t2u);
+		INT ret=t2u->input(str);
+		flushbuf++;
+		BOOL flush=FALSE;
+
+
+		String Silabificado="";
+		UttI pa, pi;
+	  if (ackpending) {  // solo si hace falta
+			t2u->outack();
+			ackpending= FALSE;
+		}
+
+		/* manejamos el buffer de flushes {flushbuf}. Lo necesitamos porque
+		los flushes no llegan a t2u mientras se esta procesando una frase,
+		ya que el ack() a este modulo se envia cuando se termina
+		con la frase en los demas modulos, y no tras el tu2->output() */
+		while (flushbuf>0) {
+			if (t2u->flush()) flushbuf--; else break;
+		}
+
+		return TRUE;
+}
+
+
 /*<DOC>*/
 /**********************************************************/
-/* Este metodo {devuelve} la frecuencia de muestreo en Hz del
-audio de salida. Se puede obtener el mismo resultado a traves
-del metodo get("SRate") (que devuelve el valor en formato de
-cadena alfanumerica). En caso de error se obtendra un valor
-0 para la frecuencia de muestreo, pero realmente esto no
-deberia suceder nunca. */
+/* Interfaz de entrada de texto. El usuario envia en {ch}
+un caracter de texto a anyadir a la cadena a sintentizar.
+La funcion {devuelve} TRUE si acepta el caracter, FALSE si
+no lo acepta.
 
-DOUBLE HTTS::getSRate( VOID )
+La funcion puede no aceptar mas caracteres porque tiene los
+bufferes internos llenos, y el usuario debe llamar a output()
+para obtener la salida disponible y hacer sitio.
+
+La interfaz de entrada input() no tiene porque generar una
+salida de audio directamente. El objeto HTTS va acumulando texto
+hasta que compone una frase completa siguiendo ciertas reglas
+sintacticas. Para asegurar que el sintetizador se vea forzado a
+generar salida de audio para TODO el texto que ha aceptado, se
+puede llamar a la funcion flush(). Esto asegura un purgado
+interno completo. */
+
+BOOL HTTS::input_multilingual( const CHAR * str, const CHAR *data_path ,BOOL InputIsFile) //inaki
 /*</DOC>*/
 {
-	const CHAR *ssrate = get("SRate");
-	return ssrate ? atof(ssrate) : 0;
+    return synthesize_do_input(str, InputIsFile, data_path);
+}
+
+int HTTS::output_multilingual(short **samples){
+		return synthesize_do_next_sentence(samples);
 }
 
 /*<DOC>*/
@@ -664,17 +1068,4 @@ VOID HTTS_SetWarnFunc( HTTS_MsgFunc *f )
 {
 	htts_set_warn_func(f);
 }
-
-/**********************************************************/
-//inaki
-//API para sintesis, recibe texto de entrada y realiza procesado
-//linguistico para el idioma que se indique
-//VOID HTTS::synthesize(const CHAR * str, CHAR ** out, const CHAR *options, BOOL InputIsFile/*=FALSE*/)//INAKI
-
-//{
-    //const char *text=str;
-    ////return ret;
-    //data->synthesize_do( str, out, options, InputIsFile);
-//}
-
-/***********************************************************/
+/////////////////////////////////////////////////////////////////
