@@ -206,9 +206,10 @@ hacer uso de la clase. Antes del create() se pueden
 inicializar algunos parametros.
 
 Existe una version alternativa create(db) que recibe una
-base de datos externa. */
+base de datos externa. XXX Que no utiliza para nada? */
 BOOL HTTS::create( VOID * db )
 {
+    (void) db;
 	int numerror=0;
 
 	assert(!created);
@@ -220,8 +221,8 @@ BOOL HTTS::create( VOID * db )
 	assert(!u2w);
 
 	BOOL ok;
-	const CHAR* npth=NULL;
-	DOUBLE d=0;
+	// const CHAR* npth=NULL;
+	// DOUBLE d=0;
 
 #ifdef HTTS_LANG_EU
 	if (lang == Lang::eu) {
@@ -860,9 +861,12 @@ uint HTTS::getSRate(){ return 16000; }
 const CHAR* HTTS::get( const CHAR* param )
 {
     const CHAR * ret;
-	if (u2w) ret = u2w->get(param); if (ret) return ret;
-	if (lingp) ret = lingp->get(param); if (ret) return ret;
-	if (t2u) ret = t2u->get(param); if (ret) return ret;
+	if (u2w) ret = u2w->get(param);
+    if (ret) return ret;
+	if (lingp) ret = lingp->get(param);
+    if (ret) return ret;
+	if (t2u) ret = t2u->get(param);
+    if (ret) return ret;
 // Por ahora hdic no tiene get
 //	if (hdic) ret = hdic->get(param); if (ret) return ret;
 	return ret;
@@ -900,18 +904,16 @@ int HTTS::synthesize_do_next_sentence(short **samples){
 //inaki
 BOOL HTTS::synthesize_do_input( const CHAR *str, BOOL InputIsFile /*=FALSE*/, const CHAR *data_path){
 
+    (void) InputIsFile;
 	assert(created);
 	strcpy(DataPath, data_path);
 	//para euskera y castellano usamos código ahoTTS
 		assert(t2u);
-		INT ret=t2u->input(str);
+		t2u->input(str);
 		flushbuf++;
-		BOOL flush=FALSE;
-
 
 		String Silabificado="";
-		UttI pa, pi;
-	  if (ackpending) {  // solo si hace falta
+        if (ackpending) {  // solo si hace falta
 			t2u->outack();
 			ackpending= FALSE;
 		}

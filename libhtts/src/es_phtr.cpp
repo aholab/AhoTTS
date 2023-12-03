@@ -103,7 +103,6 @@ VOID LangES_PhTrans::pausegr_ch2ph(UttPh & u, UttI senp)
 #define DEL(p)  NEXT(p)
 
 	CHAR *eietit = (char *)"ei" CS_S_etilde CS_S_itilde;
-	CHAR *lns = (char *)"lns";
 	CHAR *nml = (char *)"nml";
 	CHAR *nm = (char *)"nm";
 	CHAR *vow = (char *)"aeiou" CS_S_atilde CS_S_etilde CS_S_itilde CS_S_otilde CS_S_utilde CS_S_uuml;

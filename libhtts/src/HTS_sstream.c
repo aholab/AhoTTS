@@ -69,6 +69,7 @@ static void HTS_set_duration(int *duration, double *mean, double *vari,
    // - LO QUE EXCEDE 2 VECES LA SUMA DE MEDIAS VA AL ESTADO CENTRAL
    // - LA VARIANZA SE IGNORA DEBIDO A LOS PROBLEMAS QUE OCASIONA
 
+   (void) vari;
    int i;
    double temp1, temp2;
    double rho;

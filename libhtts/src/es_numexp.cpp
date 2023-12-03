@@ -173,7 +173,6 @@ CHAR es_billionSingStr[]="billón";
 
 CtI LangES_TextToList::upTo99(UINT num, CtI p, BOOL primero)
 {
-	INT numInicial = num;
 	INT emotion, emo_intensity;
 	emotion = ct.getEmotion(p);
 	emo_intensity = ct.getEmo_int(p);
@@ -331,7 +330,6 @@ CtI LangES_TextToList::expnum(CtI q, CtI p)
 	INT resto, numtern;
 	CHAR temp[]="XXX";
 	pCHAR input;
-	BOOL limit = FALSE; // Ciclo anterior limitador (mil, millones...) para la pausación.
 
 	emotion = ct.getEmotion(p);
 	emo_intensity = ct.getEmo_int(p);
@@ -379,7 +377,6 @@ CtI LangES_TextToList::expnum(CtI q, CtI p)
 				if (es_get1E3n(numtern, FALSE))
 				{
 					p = ct.insafter(p, es_get1E3n(numtern, FALSE), FALSE, emotion, emo_intensity);//inaxio-> emotion eta emo_intensity gehitu
-					limit = TRUE;
 				}
 			}
 		}
@@ -394,7 +391,6 @@ CtI LangES_TextToList::expnum(CtI q, CtI p)
 				if (es_get1E3n(numtern, TRUE))
 				{
 					p = ct.insafter(p, es_get1E3n(numtern, TRUE), FALSE, emotion, emo_intensity);//inaxio-> emotion eta emo_intensity gehitu
-					limit = TRUE;
 				}
 				break;
 			case 2:
@@ -403,7 +399,6 @@ CtI LangES_TextToList::expnum(CtI q, CtI p)
 				if (es_get1E3n(numtern, TRUE))
 				{
 					p = ct.insafter(p, es_get1E3n(numtern, TRUE), FALSE, emotion, emo_intensity);//inaxio-> emotion eta emo_intensity gehitu
-					limit = TRUE;
 				}
 				break;
 		}

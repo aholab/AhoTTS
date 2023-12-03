@@ -133,7 +133,6 @@ VOID LangEU_Categ::utt_categ( UttWS & u )
 	UttI p=NULL;		//indice para recorrer las celdas
 	//caracteristicas de palabras
 	char word_act[MAX_TAM_WORD]="\0";
-	int len_string1=0;
 	int numWord=0;	//numero de palabra en la phrase (entre signos puntuac.)
 
 	HDicRef hDicRef;
@@ -157,7 +156,6 @@ VOID LangEU_Categ::utt_categ( UttWS & u )
 		hDicRef=u.cell(p).getHDicRef();
 		strcpy(ref,u.getHDicDB()->hDicRefToTxt(hDicRef));
 		num_eq=u.getHDicDB()->query(hDicRef,HDIC_QUERY_MATCHLEN);
-		len_string1=strlen(word_act);
 
 //Yon2. !!!!! Solo vale num_eq si hDicRef != 0
 		if ((!num_eq) && (hDicRef != HDIC_REF_NULL)) found = TRUE;

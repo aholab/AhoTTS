@@ -211,7 +211,7 @@ CtI LangES_TextToList::expCard(CtI p)
 CtI LangES_TextToList::expOrd(CtI p, BOOL female, BOOL plural) 
 {
 	
-	pCHAR temp,input; //ezabatu input
+	pCHAR temp/*,input*/; //ezabatu input
 	INT stat,emotion, emo_intensity;
 	INT i;
 	UINT num;

@@ -266,8 +266,8 @@ class _SetPList: public _PList {
 protected:
 	virtual BOOL _sameData( const VOID *d1, const VOID *d2 ) const = 0;
 	Lix __seek(const _PList&a, const VOID * x) const;
-private:
-	_SetPList(const _SetPList&) {};
+// private:
+// 	_SetPList(const _SetPList&) {};
 public:
 	_SetPList(VOID) {};
 
@@ -313,8 +313,8 @@ private:
 protected:
 	VOID ** __itemvalptr(Lix p) { return &(((_KVPListNode*)p)->vp); }
 
-private:
-	_KVPList(_KVPList&) {};
+// private:
+// 	_KVPList(_KVPList&) {};
 public:
 	_KVPList(VOID) { }
 

@@ -128,11 +128,11 @@ VOID LangES_Pauses::utt_pau2(UttWS & ut)
 	// primero ponemos las pausas de sentencia normales.
 	uttSentencePauses(ut);
 
-	Lix p;
-	UttI gf;
-	INT nivel = 0, nivel_ant = 0, nivel_bajo = 0;
-	INT tnor;
-	INT numpalabras;
+	// Lix p;
+	// UttI gf;
+	// INT nivel = 0, nivel_ant = 0, nivel_bajo = 0;
+	// INT tnor;
+	// INT numpalabras;
 
 
 //INAKI

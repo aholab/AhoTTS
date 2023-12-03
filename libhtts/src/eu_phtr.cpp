@@ -69,11 +69,11 @@ Codificacion: ............... Borja Etxebarria
 
 Version  dd/mm/aa  Autor     Comentario
 -------  --------  --------  ----------
-2.0.6	 13/12/11  Inaki	 Añadir la opcion phtkatamotz para que no pronuncie como rr las palabras que empiece con r 
+2.0.6	 13/12/11  Inaki	 Añadir la opcion phtkatamotz para que no pronuncie como rr las palabras que empiece con r
 2.0.5	 14/02/11  Inaki	 Corregir palatalización 'l' en aditz trinkoak y aditzlagunak que no comiencen por "bail"
 2.0.4	 11/01/10  Inaki	 Añadir transcripción para amaia
 2.0.3    20/10/08  Inaki     Añadir soporte para transcripción en diccionario (Nora)
-2.0.2    03/10/07  Inaki     phtsimple (no coarticula entre palabras, no comprobado..) 
+2.0.2    03/10/07  Inaki     phtsimple (no coarticula entre palabras, no comprobado..)
 			     PhTSpeaker (modifica comportamiento para locutor, Karolina)
 2.0.1	 27/11/06  Eva       Arreglar los problemas que introdujo Nora en la 1.0.0
 2.0.0		23/02/2005	Nora	Transkripzio fonetikoaren salbuespenak hiztegitik hartuta
@@ -166,31 +166,31 @@ VOID LangEU_PhTrans::pausegr_ch2ph(UttPh & u, UttI senp)
 		ch2 = (p2) ? CH(p2) : 0;	// caracter siguiente (0 si no hay siguiente)
 
  /***********Hitzaren transkripzio fonetikoa hiztegian agertzen bada**2005/03/16****************/
- 		 wo=u.charFirst(p, URANGE_WORD);    
+ 		 wo=u.charFirst(p, URANGE_WORD);
 		 if (trans_fonet_hitza(u,wo))
 		 {
 		 //	fprintf(stderr, "MARKATURIK DAGO\n");
-			//idazteko funtzioa erabili 
-			p=tf_mrk_ch2ph(u,wo); 
-			     // fprintf(stderr, "TRANSKRIBATZEN DENA:  %c\t\n",u.cell(p).getChar()); 
-			p2 = NEXT(p);  //apuntador al caracter siguiente   
+			//idazteko funtzioa erabili
+			p=tf_mrk_ch2ph(u,wo);
+			     // fprintf(stderr, "TRANSKRIBATZEN DENA:  %c\t\n",u.cell(p).getChar());
+			p2 = NEXT(p);  //apuntador al caracter siguiente
 			ch2 = (p2) ? CH(p2) : 0;        // caracter siguiente (0 si no hay siguiente)
-			if (ch2==0) 
+			if (ch2==0)
 			{
 				break;
 			}
 			else
 			{
-				p=p2; 
-				ch = CH(p);             // caracter actual   
-				p2 = NEXT(p);  //apuntador al caracter siguiente  
-				ch2 = (p2) ? CH(p2) : 0;        // caracter siguiente (0 si no hay siguiente) 
+				p=p2;
+				ch = CH(p);             // caracter actual
+				p2 = NEXT(p);  //apuntador al caracter siguiente
+				ch2 = (p2) ? CH(p2) : 0;        // caracter siguiente (0 si no hay siguiente)
 			}
 		}
- /********************************************************************************/  
-	
+ /********************************************************************************/
 
-	
+
+
 		switch (ch) {
 
 		case 'a': SETPH(p, PHEU_a); break;
@@ -218,23 +218,23 @@ VOID LangEU_PhTrans::pausegr_ch2ph(UttPh & u, UttI senp)
 					{
 						SETPH(p,PHEU_iaprox);
 						break;
-					}				
+					}
 				}
 /****************************************************************************************************/
-			
+
 				if(strchr(aeou, ph3)&&strchr(nl, ch2)&&!u.charIsLast(p2, URANGE_WORD)
 				&&strchr(aeiou, ch4))
 				{
-					wo=u.wordThis(p, URANGE_PAUSE);					
+					wo=u.wordThis(p, URANGE_PAUSE);
 					if(trans_fonet_salb_i_0_j(u,wo)||es_verbo_trn(u,wo)||es_verbo_lgn(u,wo))
-					{						
+					{
 						SETPH(p,PHEU_iaprox);
 						break;
 					}
 					break;
-					
-					
-/*				
+
+
+/*
 					//excepciones a la palatalizaci¢n:
 					if(es_excepcion(u,p,'i')||es_bai_aditz(u,p))
 					{
@@ -435,7 +435,7 @@ VOID LangEU_PhTrans::pausegr_ch2ph(UttPh & u, UttI senp)
 /* Esta regla no es verdad. Muchas de las j entre vocales se pronuncian como jj: burujabe, gizajale... Solo hay que mirar
  * Lo que nos pasaron Amaia y Ziortza. No se de donde ha salido esta regla y creo que habría que desconectarla y añadir
  * en el diccionario todas las excepciones a la jj que hagan falta */
-			
+
 /*			if(!u.charIsFirst(p,URANGE_WORD)&&!u.charIsLast(p, URANGE_WORD)&&strchr(aeiou,ch3)&&strchr(aeiou, ch2))
 			{
 				SETPH(p,PHEU_j); // j->x
@@ -443,7 +443,7 @@ VOID LangEU_PhTrans::pausegr_ch2ph(UttPh & u, UttI senp)
 			}
 */
 /****************************************************************************************************/
-		
+
 		 //si es comienzo absoluto o va precedido de n,l,s,z se pronuncia PHEU_dj
 			if(u.charIsFirst(p, URANGE_PAUSE) || strchr(nlsz,ch3)|| strchr(tk,ch3))
 			{
@@ -508,7 +508,7 @@ VOID LangEU_PhTrans::pausegr_ch2ph(UttPh & u, UttI senp)
 						{
 							SETPH(p, PHEU_l); // l -> l ; no palatalizacion
 							break;
-						}	
+						}
 						///INAKI
 						if (es_verbo_trn(u,wo)||es_verbo_lgn(u,wo)){
 							//si la l se corresponde al siguiente inicio de palabra: "bail", no se palataliza
@@ -577,8 +577,8 @@ VOID LangEU_PhTrans::pausegr_ch2ph(UttPh & u, UttI senp)
 			// se palataliza ,salvo si se trata de excepci¢n o
 			//de expresi¢n (bait+auxiliar\sint‚tico) contraida
 /*Eva 4/12/2006
- * Efectivamente la transcripción debería hacerse como indica el comentario anterior. Pero cuando Nora rehizo las reglas 
- * de transcripcion eliminó la palatalizacion para todos los verbos, sean bainaiz o ginen. Como hay verbos que se 
+ * Efectivamente la transcripción debería hacerse como indica el comentario anterior. Pero cuando Nora rehizo las reglas
+ * de transcripcion eliminó la palatalizacion para todos los verbos, sean bainaiz o ginen. Como hay verbos que se
  * tienen que palatalizar, dejo la regla en que sólo se deja de palatalizar si es excepcion y he añadido en el diccionario
  * a todos los verbos bain* la etiqueta de excepcion a la palatalizacion de la n */
 			p3 = PREV(p);  ch3 = p3 ? CH(p3) : 0;
@@ -597,8 +597,8 @@ VOID LangEU_PhTrans::pausegr_ch2ph(UttPh & u, UttI senp)
 							break;
 						}
 
-							
-/*						
+
+/*
 							if(es_excepcion(u,p,'n')||es_bai_aditz(u,p))
 							{
 								SETPH(p, PHEU_n); // n -> n ; no palatalizacion
@@ -628,7 +628,7 @@ VOID LangEU_PhTrans::pausegr_ch2ph(UttPh & u, UttI senp)
 					p5 = NEXT(p2); ch5 = p5 ? CH(p5) : 0; //si la siguiente palabra empieza por 'h', miramos si la siguiente letra es vocal
 					if((strchr(aeiou, ch2) && ch2!=0 )|| (ch2=='h' && strchr(aeiou, ch5) && ch5!=0)){
 						SETPH(p,PHEU_ntilde);
-						p5 = PREV(p4);  ch5 = p5 ? CH(p5) : 0; 
+						p5 = PREV(p4);  ch5 = p5 ? CH(p5) : 0;
 						//eliminamos la i anterior si hay otra vocal antes (orain arte --> oraJ arte) (egin arte --> egiJ arte)
 						if((strchr(aeiou, ch4) && ch4!=0) || (ch4 =='h' && strchr(aeiou,ch5) && ch5!=0) )
 							SETPH(p3,' ');
@@ -728,7 +728,7 @@ VOID LangEU_PhTrans::pausegr_ch2ph(UttPh & u, UttI senp)
 				SETPH(p3, PHEU_ts);
 				break;
 			}
-			
+
 /********************s+s Orduan s-> [s]*************************************************/
 /*2005/01/31 - Nora*/
 			if(!u.charIsLast(p, URANGE_PAUSE)&&ch2=='s'&&(!phtsimple))
@@ -803,7 +803,7 @@ VOID LangEU_PhTrans::pausegr_ch2ph(UttPh & u, UttI senp)
 						hitza = u.cell(wo).getWord();
 						if((hitza[0]!='z')&&(es_verbo_trn(u,wo)||es_verbo_lgn(u,wo))) break;
 
-/**************LEHEN EGITEN ZENA***********************************************************/					
+/**************LEHEN EGITEN ZENA***********************************************************/
 /*
 						//bait seguido de auxiliar o sint‚tico que comience por n
 						//nos saltamos la t
@@ -860,13 +860,13 @@ VOID LangEU_PhTrans::pausegr_ch2ph(UttPh & u, UttI senp)
 			SETPH(p,PHEU_baprox);
 			break; // v -> B;
 
-		case 'w': 
+		case 'w':
 /********************"w", "u" bezela tratatu************************************************************/
 			p3 = PREV(p);  ch3 = p3 ? CH(p3) : 0;
 			if (strchr(aeo, ch3)&&!u.charIsLast(p3, URANGE_WORD)){
 				SETPH(p,PHEU_uaprox); // w -> w
 				break;
-			}			
+			}
 /*************************************************************************************************/
 SETPH(p, PHEU_u); break;  // w -> u
 
@@ -907,23 +907,23 @@ SETPH(p, PHEU_u); break;  // w -> u
 
 /********************"y" azkeneko garfia bada y=>[i]*************************/
 			if(!u.charIsFirst(p, URANGE_PAUSE)&&!u.charIsFirst(p3, URANGE_WORD)&&!(strchr(aeiou,ch3)||ch3=='h'))
-			{		
+			{
 				p5 = PREV(p3);  ch5 = p5 ? CH(p5) : 0;
 				if(!(strchr(aeiou,ch5)||ch5=='h'))
-				{					
-					SETPH(p, PHEU_i); 
+				{
+					SETPH(p, PHEU_i);
 					break;
 				}
-			}	
+			}
 			if(u.charIsLast(p, URANGE_PAUSE)&&!u.charIsFirst(p, URANGE_WORD))
-			{				
-				SETPH(p, PHEU_i); 
+			{
+				SETPH(p, PHEU_i);
 				break;
-			}			
+			}
 
 /**********************************************************************/
-								
-			//en comienzo absoluto ¢ seguida de n,l,s,z se pronuncia dj			
+
+			//en comienzo absoluto ¢ seguida de n,l,s,z se pronuncia dj
 			if(u.charIsFirst(p, URANGE_PAUSE) || strchr(nlsz,ch3)|| strchr(tk,ch3))
 			{
 				//fprintf(stderr, "zein daaa nlsztk eta bakarra\n");
@@ -972,11 +972,11 @@ SETPH(p, PHEU_u); break;  // w -> u
 /********************z+z Salbuespen bat baldin bada, orduan z-> [z]**********************************/
 /*
 			if(es_excepcion(u,p,'z'))
-			{				
+			{
 				SETPH(p, PHEU_z); // zz->z
 				p2=DEL(p2);
 				break;
-			}			
+			}
 */
 /*********************************************************************************************/
 
@@ -1035,7 +1035,9 @@ SETPH(p, PHEU_u); break;  // w -> u
 	 Se debe de hacer una vez silabificadas las palabras */
 
 VOID LangEU_PhTrans::iu2jw(UttPh & u)
-{ /*
+{
+    (void) u;
+/*
 	UttI p;
 
 	for (p=u.phoneFirst(); p!=0; p=u.phoneNext(p)) {

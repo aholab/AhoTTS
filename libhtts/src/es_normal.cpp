@@ -126,7 +126,6 @@ CtI LangES_TextToList::normal(VOID)
 	CtI p, firstNonP, lastToNoP;
 	CtI IneedData = NULL;
 	BOOL needMoreData = FALSE;
-	pCHAR input;//,pattern; //ezabatu
 
 	dataNeed = FALSE;
  
@@ -142,7 +141,6 @@ CtI LangES_TextToList::normal(VOID)
 		
 		//ABB
 		//
-		input = ct.getStr(p);
 
 		if(ct.getTnor(p) == UTYPENOR_ACROABBUNI) 
 		{
@@ -405,7 +403,6 @@ INT LangES_TextToList::ct2nt(const CHAR *str, BOOL flush)
 {
 	INT retval = 0;
 	pCHAR ibuffer=NULL;//,pattern;
-	CtI lastGrp;
 
 	if (!flush)
 	{
@@ -422,7 +419,7 @@ INT LangES_TextToList::ct2nt(const CHAR *str, BOOL flush)
 		// Parser EML
 		// Dentro se llama a preChop
 		
-		lastGrp = parserEmo (ibuffer, FALSE);
+		parserEmo (ibuffer, FALSE);
 		
 		if (ct.empty())
 		{
@@ -438,7 +435,7 @@ INT LangES_TextToList::ct2nt(const CHAR *str, BOOL flush)
 	}
 	else
 	{
-		lastGrp = parserEmo (ibuffer, TRUE);
+		parserEmo (ibuffer, TRUE);
 	}
 
 #ifdef HEAVY_DEBUG2

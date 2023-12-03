@@ -126,7 +126,7 @@ CHAR eu_date_raStr[]="ra";
 
 CtI LangEU_TextToList::expdateYMD(CtI p)
 {
-  UINT year;
+  // UINT year;
   UINT month;
   UINT day;
   CtI yy;
@@ -139,7 +139,7 @@ CtI LangEU_TextToList::expdateYMD(CtI p)
 	emo_intensity = ct.getEmo_int(p);
 
 
-	year = chu_str2num(ct.cell(p).str);
+	/*year = */chu_str2num(ct.cell(p).str);
   yy = p;
 	p = ct.next(p);
 	p = ct.next(p);

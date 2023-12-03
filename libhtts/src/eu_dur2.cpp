@@ -186,7 +186,7 @@ PRIVATE VOID utt_dur_unnorm(UttPh & ut)
 	UttI p;
 	DOUBLE d=0;
 	DOUBLE aux=0;
-	CartCfg ccfg={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+	CartCfg ccfg={};
 	DOUBLE datos_f[][2]={	{229.137221,133.828502},
 												{70.248063,21.001539},
 												{63.539889,22.279934},
@@ -562,7 +562,7 @@ PRIVATE INT Stress(UttPh &ut,UttI p){
 
 
 PRIVATE DOUBLE Cart_Dur(CartCfg cartcfg) {
-	INT terminalNode=0;
+	// INT terminalNode=0;
 	DOUBLE mean=0;
 /*Terminal Node 1*/
 if
@@ -826,7 +826,7 @@ if
 	)
 )
 {
-    terminalNode = -4;
+    // terminalNode = -4;
 		mean = 0.342646;
 }
 
@@ -935,7 +935,7 @@ if
   ) 
 )
 {
-    terminalNode = -5;
+    // terminalNode = -5;
 		mean = 0.134152;
 }
 
@@ -993,7 +993,7 @@ if
   ) 
 )
 {
-    terminalNode = -6;
+    // terminalNode = -6;
 		mean = 0.71947;
 }
 
@@ -1046,7 +1046,7 @@ if
   ) 
 )
 {
-    terminalNode = -7;
+    // terminalNode = -7;
 		mean = 0.479791;
 }
 
@@ -1088,7 +1088,7 @@ if
   ) 
 )
 {
-    terminalNode = -8;
+    // terminalNode = -8;
 		mean = 0.293523;
 }
 
@@ -1175,7 +1175,7 @@ if
   ) 
 )
 {
-    terminalNode = -9;
+    // terminalNode = -9;
 		mean = 0.871955;
 }
 
@@ -1231,7 +1231,7 @@ if
   ) 
 )
 {
-    terminalNode = -10;
+    // terminalNode = -10;
 		mean = 5.59063;
 }
 
@@ -1294,7 +1294,7 @@ if
   ) 
 )
 {
-    terminalNode = -11;
+    // terminalNode = -11;
 		mean = 1.23785;
 }
 
@@ -1338,7 +1338,7 @@ if
   ) 
 )
 {
-    terminalNode = -12;
+    // terminalNode = -12;
 		mean = 3.79816;
 }
 

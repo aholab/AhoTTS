@@ -186,7 +186,7 @@ PRIVATE VOID utt_dur_unnorm(UttPh & ut)
 {
 	UttI p;
 	DOUBLE d=0;
-	CartCfg ccfg={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+	CartCfg ccfg={};
 	for (p=ut.phoneFirst();p!=0;p=ut.phoneNext(p)){
 		Utt_Cart_Cfg(ut,ccfg,p);//obtengo la informaci¢n necesaria
 

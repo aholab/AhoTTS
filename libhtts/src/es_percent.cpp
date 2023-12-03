@@ -118,76 +118,7 @@ CtI LangES_TextToList::expPercent( CtI p , BOOL junto )
 	stat = ct.getStatus(p);
 	tnor = ct.getTnor(p);
 
-	if(junto)
-	{
-		if (ct(p).pattern)
-		{
-			pattern = strdup(ct(p).pattern);
-		}
-		patlen = strlen(pattern);
-		free(pattern);
-		if (patlen>1)
-		{
-			if(patlen==2)
-			{
-				q=ct.next(p);
-				r = expnum(p);
-				r = ct.next(q);
-				ct.setPatternForce(r,(char *) "l");
-
-				r = ct.insbefore(r, (char *)"ciento", FALSE);
-				ct.setPattern(r, (char *)"l");
-				ct.setStatus(r, stat);
-				ct.setTnor(r, tnor);
-
-				r = ct.insbefore(r, (char *)"por", FALSE);
-				ct.setPattern(r, (char *)"l");
-				ct.setStatus(r, stat);
-				ct.setTnor(r, tnor);
-
-				r=ct.prevGrp(r);
-				r=ct.delGrp(r);
-
-				r = expnum(p);
-				r = ct.del(p);
-				p=r;
-				return p;
-			}
-			else if(patlen==4)
-			{
-				if (strcmp(ct.getStr(ct.next(ct.next(p))), ".") == 0)
-					punto=TRUE;
-				else
-					punto=FALSE;
-				ct.del(ct.next(ct.next(ct.next(p))));
-				p=ct.lastInGrp(p);
-				p = ct.insafter(p, (char *)"por", FALSE, emotion, emo_intensity);
-				p = ct.insafter(p, (char *)"ciento", FALSE, emotion, emo_intensity);
-				p=ct.prev(ct.prev(ct.prev(p)));
-				p=ct.del(p);
-				p=expnum(p);
-				p=ct.del(p);
-
-				if(punto)
-					p = ct.insbefore(p,(char *)"punto",FALSE, emotion, emo_intensity);
-				else
-					p = ct.insbefore(p,(char *)"coma",FALSE, emotion, emo_intensity);
-				p=ct.prev(p);
-				p=expnum(p);
-				p=ct.del(p);
-
-				ct.setPattern(p, (char *)"l");
-				ct.setStatus(p, stat);
-				ct.setTnor(p, tnor);
-
-				return p;
-			}
-			else return p;
-		}
-
-	}
-
-	else
+	if(!junto)
 	{
 		q=ct.del(p);
 
@@ -202,6 +133,74 @@ CtI LangES_TextToList::expPercent( CtI p , BOOL junto )
 		ct.setTnor(q, tnor);
 		return q;
 	}
+
+    if (ct(p).pattern)
+    {
+        pattern = strdup(ct(p).pattern);
+    }
+    patlen = strlen(pattern);
+    free(pattern);
+
+    if (patlen<=1)
+    {
+        return p; // XXX: Me la juego, no estaba contemplado ??????
+    }
+    if(patlen==2)
+    {
+        q=ct.next(p);
+        r = expnum(p);
+        r = ct.next(q);
+        ct.setPatternForce(r,(char *) "l");
+
+        r = ct.insbefore(r, (char *)"ciento", FALSE);
+        ct.setPattern(r, (char *)"l");
+        ct.setStatus(r, stat);
+        ct.setTnor(r, tnor);
+
+        r = ct.insbefore(r, (char *)"por", FALSE);
+        ct.setPattern(r, (char *)"l");
+        ct.setStatus(r, stat);
+        ct.setTnor(r, tnor);
+
+        r=ct.prevGrp(r);
+        r=ct.delGrp(r);
+
+        r = expnum(p);
+        r = ct.del(p);
+        p=r;
+        return p;
+    }
+    else if(patlen==4)
+    {
+        if (strcmp(ct.getStr(ct.next(ct.next(p))), ".") == 0)
+            punto=TRUE;
+        else
+            punto=FALSE;
+        ct.del(ct.next(ct.next(ct.next(p))));
+        p=ct.lastInGrp(p);
+        p = ct.insafter(p, (char *)"por", FALSE, emotion, emo_intensity);
+        p = ct.insafter(p, (char *)"ciento", FALSE, emotion, emo_intensity);
+        p=ct.prev(ct.prev(ct.prev(p)));
+        p=ct.del(p);
+        p=expnum(p);
+        p=ct.del(p);
+
+        if(punto)
+            p = ct.insbefore(p,(char *)"punto",FALSE, emotion, emo_intensity);
+        else
+            p = ct.insbefore(p,(char *)"coma",FALSE, emotion, emo_intensity);
+        p=ct.prev(p);
+        p=expnum(p);
+        p=ct.del(p);
+
+        ct.setPattern(p, (char *)"l");
+        ct.setStatus(p, stat);
+        ct.setTnor(p, tnor);
+
+        return p;
+    }
+    else return p;
+
 }
 
 /**********************************************************/

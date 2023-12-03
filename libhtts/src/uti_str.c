@@ -255,7 +255,7 @@ const char *strsearch( const char* txt, const char* sub, int casesens )
 
 	if (len && (sub[len-1]=='$')) { /* ancla al final */
 		txt += strlen(txt)-(len-1);
-		if (casesens) { if (!strncmp(txt,sub,len-1)); return txt; }
+		if (casesens) { if (!strncmp(txt,sub,len-1)) return txt; }
 		else if (!strnicmp(txt,sub,len-1)) return txt;
 		return NULL;
 	}

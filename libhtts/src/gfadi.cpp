@@ -164,6 +164,7 @@ VOID LangEU_GF::joklgn(UttWS &u,UttI p,int *gf)
 
 VOID LangEU_GF::trn(UttWS &u,UttI p,int *gf)
 {
+    (void) gf;
 	if ( (u.cell(p).queryPOS(POS_EU_ADI_TRN)) ||
 		(u.cell(p).queryPOS(POS_EU_ATZ_ADI1)) ){
 				u.cell(p).setFGrp(GF_EU_ADI);

@@ -209,7 +209,10 @@ private:
 	friend class LangEU_HDicDB;
 
 	virtual const CHAR *getLangStr( VOID ) = 0;
-	virtual BOOL flagParse( const CHAR *s, HDicRef &f ) { return FALSE; };
+	virtual BOOL flagParse( const CHAR *s, HDicRef &f ) {
+        (void) s;
+        (void) f;
+        return FALSE; };
 	virtual HDicRef searchBin(char **exp)=0;
 
 protected:

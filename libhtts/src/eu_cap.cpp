@@ -102,16 +102,15 @@ amaierakoak minuskulaz dauden hitzak tratatzeko baldintzak
 
 INT LangEU_TextToList::isCap(CtI p)
 {
-	INT i;
 	INT value=0;
-	INT emotion, emo_intensity;
+	// INT emotion, emo_intensity;
 	pCHAR changeStr, origStr;
 	BOOL mayus_min,	min_mayus; //Larraitz
 
 	pCHAR pattern;
 
-	emotion = ct.getEmotion(p);
-	emo_intensity = ct.getEmo_int(p);
+	// emotion = ct.getEmotion(p);
+	// emo_intensity = ct.getEmo_int(p);
 
 	//Comprobamos que sólo son letras
 	if(ct(p).pattern)
@@ -155,7 +154,7 @@ INT LangEU_TextToList::isCap(CtI p)
 
 		else //Larraitz
 		{
-			for(i=0;i<strlen(changeStr);i++)
+			for(size_t i=0;i<strlen(changeStr);i++)
 			{
 				if(changeStr[i]==origStr[i])
 				{
@@ -173,7 +172,7 @@ exit:
 
 	if(value == 3) //Larraitz
 	{
-		for(i=0;i<strlen(changeStr);i++)
+		for(size_t i=0;i<strlen(changeStr);i++)
 		{
 			if (changeStr[i]==origStr[i])
 			{
@@ -203,7 +202,7 @@ exit:
 CtI LangEU_TextToList::pronounce(CtI p)
 {
 	INT stat;
-	INT i, j, k;
+	size_t i, j, k;
 	INT l=0, ll=0, r=0, rr=0, s;//Contadores de casos
 	INT prevvowel,endpoint,startpoint;
 	INT vowel=0;

@@ -406,12 +406,14 @@ VOID CAudioFile::writeToTxt( FILE *f )
 {
 	LONG whence, i, j, n;
 	INT nch;
-	LONG cols;
+//1.0.2	 20/09/07  Ibon
+/*  LONG cols;
+	cols = myOpts.lval(CAUDIO_TXTCOLUMNS,DEF_TXTCOLUMNS);
+*/
 
 	txtWriteAllInfo(f,TRUE);
 
 	whence = myOpts.lval(CAUDIO_TXTCOMMENT,DEF_TXTCOMMENT);
-	cols = myOpts.lval(CAUDIO_TXTCOLUMNS,DEF_TXTCOLUMNS);
 
 	fprintf(f,INFO_SAMPLES " = {\n");
 	n = getNSamples();

@@ -133,7 +133,7 @@ VOID LangES_GF::utt_gf(UttWS &u)
 	INT tnor;
 
 	// ############################################################################
-	// # previo | utilización 
+	// # previo | utilización
 	// # --------------------------------------------------------------------------
 	// #    0   | Por defecto
 	// #    1   | Preposición o Demostrativo  + Relativo ("el que", "por quien")
@@ -156,7 +156,7 @@ VOID LangES_GF::utt_gf(UttWS &u)
 		// ##########
 
 		case POS_ES_CONJ:
-			gf=7;	
+			gf=7;
 			previo = 0;
 			break;
 		// ##########
@@ -167,11 +167,13 @@ VOID LangES_GF::utt_gf(UttWS &u)
 			{
 				u.cell(u.wordPrev(p)).setFGrp(6);
 			}
+            break;
 		case POS_ES_SUSP_VERB:
 			if(!strcmp("lo", u.cell(p).getWord()))
 			{
 				previo = 3;
 			}
+            break;
 		case POS_ES_VERB_ENCL:
 		case POS_ES_VERB_COMP:
 			gf=6;
@@ -205,6 +207,7 @@ VOID LangES_GF::utt_gf(UttWS &u)
 				previo = 2;
 				break;
 			}
+            break;
 		case POS_ES_VERB_GERU:
 			previo = 0;
 			gf=5;
@@ -239,6 +242,7 @@ VOID LangES_GF::utt_gf(UttWS &u)
 				}
 			}
 			else gf = 5;
+            break;
 		case POS_ES_PREP:
 			previo = 1;
 			gf=5;
@@ -247,7 +251,7 @@ VOID LangES_GF::utt_gf(UttWS &u)
 		// # gf = 4 #
 		// ##########
 		case POS_ES_SUSP_IND:
-			gf = 4;			
+			gf = 4;
 			previo = 0;
 			if(!strcmp("la", u.cell(p).getWord()) || !strcmp("las", u.cell(p).getWord()) ||
 				!strcmp("los", u.cell(p).getWord()))
@@ -274,6 +278,7 @@ VOID LangES_GF::utt_gf(UttWS &u)
 		case POS_ES_DEMO_IND:
 			previo = 1;
 			gf=3;
+            break;
 		// #########
 		// # gf -- #
 		// #########

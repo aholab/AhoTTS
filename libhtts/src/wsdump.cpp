@@ -212,7 +212,7 @@ UttWS *TextToList::ct2ws(BOOL *flush)
 	BOOL insidePar = FALSE;
 	BOOL endParse = FALSE;
 	BOOL flushLocated = FALSE;
-	BOOL pausa = FALSE; //inaki
+	// BOOL pausa = FALSE; //inaki
 	if (procLastGrp) lastToNoP = NULL;
 	else lastToNoP = ct.lastGrp();
 
@@ -548,6 +548,8 @@ BOOL TextToList::isThereAnUtt( VOID )
 
 UttWS *TextToList::wsoutput(BOOL *flush, INT mode, VOID *param)
 {
+    (void) mode;
+    (void) param;
   UttWS *retval = NULL;
 
   if (isThereAnUtt()) retval = ct2ws(flush);
@@ -563,6 +565,8 @@ UttWS *TextToList::wsoutput(BOOL *flush, INT mode, VOID *param)
 
 pCHAR TextToList::wsoutputtext(BOOL *flush, INT mode, VOID *param)
 {
+    (void) mode;
+    (void) param;
   pCHAR retval = NULL;
 
   if (isThereAnUtt()) retval = ct2txt(flush);

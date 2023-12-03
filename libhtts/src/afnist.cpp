@@ -104,26 +104,53 @@ LONG AFNist::HdrR( FILE *f, KVStrList &, BOOL override )
 
   while (1) {
     if (!xfgets(buf,N,f)) break;
-    if (strlen(buf) && (buf[strlen(buf)-1]!='\n'))
+    if (strlen(buf) && (buf[strlen(buf)-1]!='\n')) {
       die_beep("%s error: NIST header line too long",fFormat());
+    }
     s = strtok(buf," \n");
     if (!s) continue;
     if (!strcmp(s,"end_head")) break;
-		if (!strcmp(s,"channel_count")) { s=strtok(NULL," \n"); s=strtok(NULL," \n;"); if (s) ADDIFNOV(CAUDIO_NCHAN,atol(s)); };
-    if (!strcmp(s,"sample_count")) { s=strtok(NULL," \n"); s=strtok(NULL," \n;"); if (s) nSamp=atol(s); };
-    if (!strcmp(s,"sample_rate")) { s=strtok(NULL," \n"); s=strtok(NULL," \n;"); if (s) ADDIFNOV(CAUDIO_SRATE,atol(s)); };
-    if (!strcmp(s,"sample_coding")) { s=strtok(NULL," \n"); s=strtok(NULL," \n;");
-      if (s && (strcmp("pcm",s))) die_beep("%s error: sample coding not supported (%s)",fFormat(),s); }
-    if (!strcmp(s,"sample_n_bytes")) { s=strtok(NULL," \n"); s=strtok(NULL," \n;");
-      INT slen=atoi(s);
-			if (slen==2) ADD(CAUDIO_SAMPTYPE,SAMPTYPE_STR_PCM16);
-      else if (slen==1) ADD(CAUDIO_SAMPTYPE,SAMPTYPE_STR_PCM8U);
-      else die_beep("%s error: sample size not supported (%s)",fFormat(),s);
+    if (!strcmp(s,"channel_count")) {
+        s=strtok(NULL," \n");
+        s=strtok(NULL," \n;");
+        if (s) ADDIFNOV(CAUDIO_NCHAN,atol(s));
     }
-    if (!strcmp(s,"sample_byte_format")) { s=strtok(NULL," \n"); s=strtok(NULL," \n;");
-      if (s && (!strcmp("10",s))) ADDIFNOV(CAUDIO_BIGENDIAN,"yes");
-      else if (s && (!strcmp(s,"01"))) ADDIFNOV(CAUDIO_BIGENDIAN,"no");
-      else if (s) die_beep("%s error: sample byte format not supported (%s)",fFormat(),s);
+    if (!strcmp(s,"sample_count")) {
+        s=strtok(NULL," \n");
+        s=strtok(NULL," \n;");
+        if (s) nSamp=atol(s);
+    }
+    if (!strcmp(s,"sample_rate")) {
+        s=strtok(NULL," \n");
+        s=strtok(NULL," \n;");
+        if (s) {
+            ADDIFNOV(CAUDIO_SRATE,atol(s));
+        }
+    }
+    if (!strcmp(s,"sample_coding")) {
+        s=strtok(NULL," \n"); s=strtok(NULL," \n;");
+        if (s && (strcmp("pcm",s))) {
+            die_beep("%s error: sample coding not supported (%s)",fFormat(),s);
+        }
+    }
+    if (!strcmp(s,"sample_n_bytes")) {
+        s=strtok(NULL," \n"); s=strtok(NULL," \n;");
+        INT slen=atoi(s);
+        if (slen==2) {
+            ADD(CAUDIO_SAMPTYPE,SAMPTYPE_STR_PCM16);
+        } else if (slen==1) {
+            ADD(CAUDIO_SAMPTYPE,SAMPTYPE_STR_PCM8U);
+        } else die_beep("%s error: sample size not supported (%s)",fFormat(),s);
+    }
+    if (!strcmp(s,"sample_byte_format")) {
+        s=strtok(NULL," \n"); s=strtok(NULL," \n;");
+        if (s && (!strcmp("10",s))) {
+            ADDIFNOV(CAUDIO_BIGENDIAN,"yes");
+        } else if (s && (!strcmp(s,"01"))) {
+            ADDIFNOV(CAUDIO_BIGENDIAN,"no");
+        } else if (s) {
+            die_beep("%s error: sample byte format not supported (%s)",fFormat(),s);
+        }
     }
   }  // while
 

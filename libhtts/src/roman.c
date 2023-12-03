@@ -212,22 +212,25 @@ BOOL isRoman(pCHAR str)
        validRoman = FALSE;
        switch(prev) {
          case ROMAN_I:
-              if ((current == ROMAN_V) || ( current == ROMAN_X))
+              if ((current == ROMAN_V) || ( current == ROMAN_X)){
                   validRoman = TRUE;
-                  subsRoman[ROMAN_I] = TRUE;
-                  howmanytimesSubs[ROMAN_I]++;
+              }
+              subsRoman[ROMAN_I] = TRUE;
+              howmanytimesSubs[ROMAN_I]++;
               break;
          case ROMAN_X:
-              if ((current == ROMAN_L) || ( current == ROMAN_C))
+              if ((current == ROMAN_L) || ( current == ROMAN_C)){
                   validRoman = TRUE;
-                  subsRoman[ROMAN_X] = TRUE;
-                  howmanytimesSubs[ROMAN_X]++;
+              }
+              subsRoman[ROMAN_X] = TRUE;
+              howmanytimesSubs[ROMAN_X]++;
             break;
          case ROMAN_C:
-              if ((current == ROMAN_D) || ( current == ROMAN_M))
+              if ((current == ROMAN_D) || ( current == ROMAN_M)){
                   validRoman = TRUE;
-                  subsRoman[ROMAN_C] = TRUE;
-                  howmanytimesSubs[ROMAN_C]++;
+              }
+              subsRoman[ROMAN_C] = TRUE;
+              howmanytimesSubs[ROMAN_C]++;
             break;
          default:
             break;

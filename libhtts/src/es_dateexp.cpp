@@ -90,10 +90,10 @@ inigos
 
 #include "stdlib.h"
 #include "stdio.h"
+#include "string.h"
 
 #include "es_t2l.hpp"
 #include "symbolexp.h"
-#include "string.h"
 #include "choputi.h"
 
 /**********************************************************/
@@ -113,10 +113,10 @@ CHAR es_date_deStr[]="de";
 
 CtI LangES_TextToList::expdateYMD(CtI p)
 {
-  UINT year;
+  // UINT year;
   UINT month;
   UINT day;
-  CtI yy;
+  // CtI yy;
   CtI q, r;
   INT stat, emotion, emo_intensity;
 
@@ -125,7 +125,8 @@ CtI LangES_TextToList::expdateYMD(CtI p)
 	emo_intensity = ct.getEmo_int(p);
 
 	r=p;
-	year = chu_str2num(ct.cell(p).str);
+    // TODO: It's unused... should it be?
+	// year = chu_str2num(ct.cell(p).str);
 	p = ct.next(p);
 	p = ct.next(p);
 	month = chu_str2num(ct.cell(p).str);
@@ -133,7 +134,8 @@ CtI LangES_TextToList::expdateYMD(CtI p)
 	p = ct.next(p);
 	day = chu_str2num(ct.cell(p).str);
 
-	yy = p;
+    // TODO: It's unused... should it be?
+	// yy = p;
 
 	q = p;
 
