@@ -82,6 +82,7 @@ funciones de la clase de Categorización.
 #include "es_lingp.hpp"
 #include "httsmsg.h"
 #include "tnor.h"
+#include "chset.h"
 
 //#define DEBUG() fprintf (stderr,"file..: %s -- line..: %d\n",__FILE__,__LINE__);
 
@@ -3952,19 +3953,19 @@ int quitar_acentos(CHAR *word_act)
 	{
 		switch (word_act[i])
 		{
-		case 'á':
+		case CS_atilde:
 			word_act[i] = 'a';
 			break;
-		case 'é':
+		case CS_etilde:
 			word_act[i] = 'e';
 			break;
-		case 'í':
+		case CS_itilde:
 			word_act[i] = 'i';
 			break;
-		case 'ó':
+		case CS_otilde:
 			word_act[i] = 'o';
 			break;
-		case 'ú':
+		case CS_utilde:
 			word_act[i] = 'u';
 			break;
 		}
