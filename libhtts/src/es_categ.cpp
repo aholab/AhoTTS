@@ -82,6 +82,7 @@ funciones de la clase de Categorización.
 #include "es_lingp.hpp"
 #include "httsmsg.h"
 #include "tnor.h"
+#include "chset.h"
 
 //#define DEBUG() fprintf (stderr,"file..: %s -- line..: %d\n",__FILE__,__LINE__);
 
@@ -136,57 +137,52 @@ VOID LangES_Categ::utt_categ( UttWS & u )
 	UttI p=NULL;		//indice para recorrer las celdas
 	//caracteristicas de palabras
 	char word_act[MAX_TAM_WORD]="\0";
-	int len_string1=0;
-	int numWord=0;	//numero de palabra en la phrase (entre signos puntuac.)
 
 	HDicRef hDicRef;
 	char ref[MAX_TAM_WORD]="\0";
-	int num_eq=0,found=0;
+	int num_eq=0;
 	int num_palab=0, i=0;
-	
+
 	for(p=u.wordFirst(); p!=NULL; p=u.wordNext(p))
 	{
 		num_palab++;
-	}	
-	 
+	}
 
-	etiquetas *pos;	
+
+	etiquetas *pos;
 	pos=new etiquetas[num_palab];
 
 	//---------------------------------------------------------------
-	//  Recorrido palabra por palabra de cada frase, de cada u.      
+	//  Recorrido palabra por palabra de cada frase, de cada u.
 	//---------------------------------------------------------------
 	for(p=u.wordFirst(); p!=NULL; p=u.wordNext(p))
 	{
 		strcpy(word_act,u.cell(p).getWord());
-		
+
 		//================================================================
-		//  Analisis POS: Part Of Speech                                  
+		//  Analisis POS: Part Of Speech
 		//================================================================
 
 		u.cell(p).setPOS(POS_ES_NONE);
 		hDicRef=u.cell(p).getHDicRef();
 		strcpy(ref,u.getHDicDB()->hDicRefToTxt(hDicRef));
 		num_eq=u.getHDicDB()->query(hDicRef,HDIC_QUERY_MATCHLEN);
-		len_string1=strlen(word_act);
-		
-		
-		
+
 		pos[i].pos1=0,pos[i].pos2=0,pos[i].pos3=0,pos[i].pos4=0,pos[i].pos5=0,pos[i].contador=0;
 
 		//Yon2. !!!!! Solo vale num_eq si hDicRef != 0
 
 		if ((!num_eq) && (hDicRef != HDIC_REF_NULL))
-		{ 
+		{
 			// asignar POS a palabra encontrada en diccionario
 			//printf("%s\n",(const char*)word_act);
 			if (posdic(u,p,i,pos)){
-			//	printf("ha encontrado la palabra en el diccionario %s\n",(const char*)word_act);				
-				i++;			
+			//	printf("ha encontrado la palabra en el diccionario %s\n",(const char*)word_act);
+				i++;
 				continue;
 			}
 		}
-				
+
 		// miramos si es un adverbio
 		if(es_xxmente( u, p)){
 			i++;
@@ -198,10 +194,10 @@ VOID LangES_Categ::utt_categ( UttWS & u )
 			i++;
 			continue;
 		}
-		
+
 		// ¿es un verbo enclítico?
 		if(	es_enclitico(u, p,i ,pos))
-		{			
+		{
 			u.cell(p).setPOS(POS_ES_VERB_ENCL);
 			i++;
 			continue;
@@ -210,13 +206,13 @@ VOID LangES_Categ::utt_categ( UttWS & u )
 			i++;
 			continue;
 		}
-		
-	}		
-	
-	
-	desambiguar(u,pos);	
-	
-	
+
+	}
+
+
+	desambiguar(u,pos);
+
+
 }
 
 // ***************
@@ -233,7 +229,7 @@ INT LangES_Categ::desambiguar(UttWS & u, etiquetas *pos)
 	// noverbo:  0 = no pre verbo o preposición; 1 = indiferente; 2 = pre verbo; 3 = no post verbo 4 = verbo
 
 	for(p=u.wordFirst(); p!=NULL; p=u.wordNext(p))
-	{		
+	{
 		if (mirar_etiq(8,i,pos)==1 || mirar_etiq(200,i,pos)==1 || mirar_etiq(800,i,pos)==1 || mirar_etiq(20,i,pos)==1){ //POS_ES_DEMO_NOVERB, POS_ES_INDNUM_NOVERB, POS_ES_CARD_NOVERB, POS_ES_POSE_NOVERB
 			noverbo = 0;
 		}
@@ -262,19 +258,19 @@ INT LangES_Categ::desambiguar(UttWS & u, etiquetas *pos)
 				noverbo=4;
 			}
 		}
-		else if( mirar_etiq(1,i,pos)==1){//POS_ES_SUSP_VERB		
+		else if( mirar_etiq(1,i,pos)==1){//POS_ES_SUSP_VERB
 			noverbo = 2;
-		}	
-		else if( mirar_etiq(4,i,pos)==1){//POS_ES_SUSP_NPV	
-			noverbo = 3;	
+		}
+		else if( mirar_etiq(4,i,pos)==1){//POS_ES_SUSP_NPV
+			noverbo = 3;
 		}
 		else{
 			noverbo = 1;
 		}
-			
-		i++;	
-		
-	}		
+
+		i++;
+
+	}
 		// switch(u.cell(p).getPOS())
 		// {
 		// case POS_ES_DEMO_NOVERB:
@@ -341,7 +337,7 @@ INT LangES_Categ::desambiguar(UttWS & u, etiquetas *pos)
 	i=0;
 	for(p=u.wordFirst(); p!=NULL; p=u.wordNext(p))
 	{
-		strcpy(word_act,u.cell(p).getWord());		
+		strcpy(word_act,u.cell(p).getWord());
 			if (mirar_etiq(10001,i,pos)==1){ //POS_ES_VERB_SIMP_DEBIL
 				if(u.wordPrev(p) != NULL)
 				{
@@ -352,11 +348,11 @@ INT LangES_Categ::desambiguar(UttWS & u, etiquetas *pos)
 						if (p != u.wordFirst())
 						{
 							strcpy(word_prev,u.cell(u.wordPrev(p)).getWord());
-							
+
 							if (mirar_etiq(2,i-1,pos)){ //POS_ES_SUSP_IND
 							// si no es "la" es verbo ("_lo prueba")
 								// si es la puede serlo ("_la prueba")
-								if(strcmp("la", word_prev)) 
+								if(strcmp("la", word_prev))
 								{
 									u.cell(p).setPOS(POS_ES_VERB_SIMP);
 									u.cell(u.wordPrev(p)).setPOS(POS_ES_SUSP_VERB);
@@ -366,7 +362,7 @@ INT LangES_Categ::desambiguar(UttWS & u, etiquetas *pos)
 								if (mirar_etiq(40,i-1,pos)){ //POS_ES_POSE_IND
 									// si no es "nuestra" o "vuestra" es verbo ("con lo _tuyo prueba")
 									// si es "nuestra" o "vuestra" puede serlo ("_nuestra prueba")
-									if(strcmp("nuestra", word_prev) || strcmp("vuestra", word_prev)) 
+									if(strcmp("nuestra", word_prev) || strcmp("vuestra", word_prev))
 									{
 										u.cell(p).setPOS(POS_ES_VERB_SIMP);
 										u.cell(u.wordPrev(p)).setPOS(POS_ES_SUSP_VERB);
@@ -377,23 +373,23 @@ INT LangES_Categ::desambiguar(UttWS & u, etiquetas *pos)
 										// -a  no desambigua;
 										tam=strlen(word_prev);
 
-										if(word_prev[tam-1] != 'a') 
+										if(word_prev[tam-1] != 'a')
 										{
 											u.cell(p).setPOS(POS_ES_VERB_SIMP);
 											u.cell(u.wordPrev(p)).setPOS(POS_ES_SUSP_VERB);
-										}									
+										}
 									}
 									else{
 										if (mirar_etiq(1000,i-1,pos)){ //POS_ES_CARD_IND
 											// si no es una es verbo
-											if(strcmp("una", word_prev)) 
+											if(strcmp("una", word_prev))
 											{
 												u.cell(p).setPOS(POS_ES_VERB_SIMP);
 												u.cell(u.wordPrev(p)).setPOS(POS_ES_SUSP_VERB);
 											}
 										}
 									}
-								}								
+								}
 							}
 						}
 						break;
@@ -401,17 +397,17 @@ INT LangES_Categ::desambiguar(UttWS & u, etiquetas *pos)
 						if (p != u.wordFirst())
 						{
 						strcpy(word_prev,u.cell(u.wordPrev(p)).getWord());
-													
+
 							if (mirar_etiq(2,i-1,pos)){ //POS_ES_SUSP_IND
 									// es verbo (_lo cojo)
 									u.cell(p).setPOS(POS_ES_VERB_SIMP);
-									u.cell(u.wordPrev(p)).setPOS(POS_ES_SUSP_VERB);	
+									u.cell(u.wordPrev(p)).setPOS(POS_ES_SUSP_VERB);
 							}
 							else{
 								if (mirar_etiq(40,i-1,pos)){ //POS_ES_POSE_IND
 									// si no es "nuestro" o "vuestro" es verbo ("con lo _tuyo cazo")
 									// si es "nuestro" o "vuestro" puede serlo ("_nuestro cazo")
-									if(strcmp("nuestro", word_prev) || strcmp("vuestro", word_prev)) 
+									if(strcmp("nuestro", word_prev) || strcmp("vuestro", word_prev))
 									{
 										u.cell(p).setPOS(POS_ES_VERB_SIMP);
 										u.cell(u.wordPrev(p)).setPOS(POS_ES_SUSP_VERB);
@@ -421,12 +417,12 @@ INT LangES_Categ::desambiguar(UttWS & u, etiquetas *pos)
 									if (mirar_etiq(400,i-1,pos)){ //POS_ES_INDNUM_IND
 										// con "otro", "todo" y "mismo" no desambigua (_otro juego)
 										if(strcmp("otro", word_prev) || strcmp("todo", word_prev)
-											|| strcmp("mismo", word_prev)) 
+											|| strcmp("mismo", word_prev))
 										{
 											u.cell(p).setPOS(POS_ES_VERB_SIMP);
 											u.cell(u.wordPrev(p)).setPOS(POS_ES_SUSP_VERB);
 										}
-									}							
+									}
 								}
 							}
 						}
@@ -438,43 +434,43 @@ INT LangES_Categ::desambiguar(UttWS & u, etiquetas *pos)
 						if (mirar_etiq(2,i-1,pos)){ //POS_ES_SUSP_IND
 							// si no es "las" es verbo ("_lo pruebas")
 							// si es la puede serlo ("_las pruebas")
-							if(strcmp("las", word_prev)) 
+							if(strcmp("las", word_prev))
 							{
 								u.cell(p).setPOS(POS_ES_VERB_SIMP);
 								u.cell(u.wordPrev(p)).setPOS(POS_ES_SUSP_VERB);
 							}
 						}
 						else{
-							if (mirar_etiq(40,i-1,pos)){ //POS_ES_POSE_IND						
+							if (mirar_etiq(40,i-1,pos)){ //POS_ES_POSE_IND
 								// si no es "nuestras" o "vuestras" es verbo ("con lo _tuyo prueba")
 								// si es "nuestras" o "vuestras" puede serlo ("_nuestras pruebas")
-								if(strcmp("nuestras", word_prev) || strcmp("vuestras", word_prev)) 
+								if(strcmp("nuestras", word_prev) || strcmp("vuestras", word_prev))
 								{
 									u.cell(p).setPOS(POS_ES_VERB_SIMP);
 									u.cell(u.wordPrev(p)).setPOS(POS_ES_SUSP_VERB);
 								}
 							}
 							else{
-								if (mirar_etiq(400,i-1,pos)){ //POS_ES_INDNUM_IND							
+								if (mirar_etiq(400,i-1,pos)){ //POS_ES_INDNUM_IND
 									// -as  no desambigua;
 									tam=strlen(word_prev);
 
-									if(strcmp("as", &word_prev[tam-2])) 
+									if(strcmp("as", &word_prev[tam-2]))
 									{
 										u.cell(p).setPOS(POS_ES_VERB_SIMP);
 										u.cell(u.wordPrev(p)).setPOS(POS_ES_SUSP_VERB);
 									}
 								}
 								else{
-									if (mirar_etiq(1000,i-1,pos)){ //POS_ES_CARD_IND						
+									if (mirar_etiq(1000,i-1,pos)){ //POS_ES_CARD_IND
 										// si no es unas es verbo
-										if(strcmp("unas", word_prev)) 
+										if(strcmp("unas", word_prev))
 										{
 											u.cell(p).setPOS(POS_ES_VERB_SIMP);
 											u.cell(u.wordPrev(p)).setPOS(POS_ES_SUSP_VERB);
 										}
 									}
-								}								
+								}
 							}
 						}
 					}
@@ -483,8 +479,8 @@ INT LangES_Categ::desambiguar(UttWS & u, etiquetas *pos)
 					break;
 				}
 			}
-		}	
-		
+		}
+
 		// if (u.cell(p).getPOS() == POS_ES_VERB_SIMP_DEBIL)
 		// {
 			// if(u.wordPrev(p) != NULL)
@@ -502,7 +498,7 @@ INT LangES_Categ::desambiguar(UttWS & u, etiquetas *pos)
 							// case POS_ES_SUSP_IND:
 								//si no es "la" es verbo ("_lo prueba")
 								//si es la puede serlo ("_la prueba")
-								// if(strcmp("la", word_prev)) 
+								// if(strcmp("la", word_prev))
 								// {
 									// u.cell(p).setPOS(POS_ES_VERB_SIMP);
 									// u.cell(u.wordPrev(p)).setPOS(POS_ES_SUSP_VERB);
@@ -511,7 +507,7 @@ INT LangES_Categ::desambiguar(UttWS & u, etiquetas *pos)
 							// case POS_ES_POSE_IND:
 								//si no es "nuestra" o "vuestra" es verbo ("con lo _tuyo prueba")
 								//si es "nuestra" o "vuestra" puede serlo ("_nuestra prueba")
-								// if(strcmp("nuestra", word_prev) || strcmp("vuestra", word_prev)) 
+								// if(strcmp("nuestra", word_prev) || strcmp("vuestra", word_prev))
 								// {
 									// u.cell(p).setPOS(POS_ES_VERB_SIMP);
 									// u.cell(u.wordPrev(p)).setPOS(POS_ES_SUSP_VERB);
@@ -521,7 +517,7 @@ INT LangES_Categ::desambiguar(UttWS & u, etiquetas *pos)
 								//-a  no desambigua;
 								// tam=strlen(word_prev);
 
-								// if(word_prev[tam-1] != 'a') 
+								// if(word_prev[tam-1] != 'a')
 								// {
 									// u.cell(p).setPOS(POS_ES_VERB_SIMP);
 									// u.cell(u.wordPrev(p)).setPOS(POS_ES_SUSP_VERB);
@@ -529,7 +525,7 @@ INT LangES_Categ::desambiguar(UttWS & u, etiquetas *pos)
 								// break;
 							// case POS_ES_CARD_IND:
 								//si no es una es verbo
-								// if(strcmp("una", word_prev)) 
+								// if(strcmp("una", word_prev))
 								// {
 									// u.cell(p).setPOS(POS_ES_VERB_SIMP);
 									// u.cell(u.wordPrev(p)).setPOS(POS_ES_SUSP_VERB);
@@ -554,7 +550,7 @@ INT LangES_Categ::desambiguar(UttWS & u, etiquetas *pos)
 							// case POS_ES_POSE_IND:
 								//si no es "nuestro" o "vuestro" es verbo ("con lo _tuyo cazo")
 								//si es "nuestro" o "vuestro" puede serlo ("_nuestro cazo")
-								// if(strcmp("nuestro", word_prev) || strcmp("vuestro", word_prev)) 
+								// if(strcmp("nuestro", word_prev) || strcmp("vuestro", word_prev))
 								// {
 									// u.cell(p).setPOS(POS_ES_VERB_SIMP);
 									// u.cell(u.wordPrev(p)).setPOS(POS_ES_SUSP_VERB);
@@ -563,7 +559,7 @@ INT LangES_Categ::desambiguar(UttWS & u, etiquetas *pos)
 							// case POS_ES_INDNUM_IND:
 								//con "otro", "todo" y "mismo" no desambigua (_otro juego)
 								// if(strcmp("otro", word_prev) || strcmp("todo", word_prev)
-									// || strcmp("mismo", word_prev)) 
+									// || strcmp("mismo", word_prev))
 								// {
 									// u.cell(p).setPOS(POS_ES_VERB_SIMP);
 									// u.cell(u.wordPrev(p)).setPOS(POS_ES_SUSP_VERB);
@@ -583,7 +579,7 @@ INT LangES_Categ::desambiguar(UttWS & u, etiquetas *pos)
 							// case POS_ES_SUSP_IND:
 								//si no es "las" es verbo ("_lo pruebas")
 								//si es la puede serlo ("_las pruebas")
-								// if(strcmp("las", word_prev)) 
+								// if(strcmp("las", word_prev))
 								// {
 									// u.cell(p).setPOS(POS_ES_VERB_SIMP);
 									// u.cell(u.wordPrev(p)).setPOS(POS_ES_SUSP_VERB);
@@ -592,7 +588,7 @@ INT LangES_Categ::desambiguar(UttWS & u, etiquetas *pos)
 							// case POS_ES_POSE_IND:
 								//si no es "nuestras" o "vuestras" es verbo ("con lo _tuyo prueba")
 								//si es "nuestras" o "vuestras" puede serlo ("_nuestras pruebas")
-								// if(strcmp("nuestras", word_prev) || strcmp("vuestras", word_prev)) 
+								// if(strcmp("nuestras", word_prev) || strcmp("vuestras", word_prev))
 								// {
 									// u.cell(p).setPOS(POS_ES_VERB_SIMP);
 									// u.cell(u.wordPrev(p)).setPOS(POS_ES_SUSP_VERB);
@@ -602,7 +598,7 @@ INT LangES_Categ::desambiguar(UttWS & u, etiquetas *pos)
 								//-as  no desambigua;
 								// tam=strlen(word_prev);
 
-								// if(strcmp("as", &word_prev[tam-2])) 
+								// if(strcmp("as", &word_prev[tam-2]))
 								// {
 									// u.cell(p).setPOS(POS_ES_VERB_SIMP);
 									// u.cell(u.wordPrev(p)).setPOS(POS_ES_SUSP_VERB);
@@ -610,7 +606,7 @@ INT LangES_Categ::desambiguar(UttWS & u, etiquetas *pos)
 								// break;
 							// case POS_ES_CARD_IND:
 								//si no es unas es verbo
-								// if(strcmp("unas", word_prev)) 
+								// if(strcmp("unas", word_prev))
 								// {
 									// u.cell(p).setPOS(POS_ES_VERB_SIMP);
 									// u.cell(u.wordPrev(p)).setPOS(POS_ES_SUSP_VERB);
@@ -627,12 +623,12 @@ INT LangES_Categ::desambiguar(UttWS & u, etiquetas *pos)
 			// }
 		// }
 
-		
-		
+
+
 		// Miramos si es un artículo o un sustantivo personal
 		// sustantivo personal + verbo
 
-		
+
 		if (mirar_etiq(2,i,pos)) //POS_ES_SUSP_IND
 		{
 			strcpy(word_act,u.cell(p).getWord());
@@ -646,15 +642,15 @@ INT LangES_Categ::desambiguar(UttWS & u, etiquetas *pos)
 					//POS_ES_VERB_SIMP,POS_ES_VERB_SIMP_DEBIL,POS_ES_VERB_COMP,POS_ES_VERB_GERU,POS_ES_VERB_PPIO,POS_ES_VERB_IR1C,POS_ES_VERB_IR2C,POS_ES_VERB_IR3C,POS_ES_VERB_IICC
 					u.cell(p).setPOS(POS_ES_DEMO_NOVERB);
 					}
-					
+
 				}
 			}
 		}
-		i++;	
-	}	
-		
-		
-		// if (u.cell(p).getPOS() == POS_ES_SUSP_IND) 
+		i++;
+	}
+
+
+		// if (u.cell(p).getPOS() == POS_ES_SUSP_IND)
 		// {
 			// strcpy(word_act,u.cell(p).getWord());
 
@@ -682,18 +678,18 @@ INT LangES_Categ::desambiguar(UttWS & u, etiquetas *pos)
 				// }
 			// }
 		// }
-		
-	//desambiguar en los casos en los que hay mas de una etiqueta	
-		//desambiguacion entre verbos,adjetivos y sustantivos 
-	
+
+	//desambiguar en los casos en los que hay mas de una etiqueta
+		//desambiguacion entre verbos,adjetivos y sustantivos
+
 	i=0;
 	for(p=u.wordFirst(); p!=NULL; p=u.wordNext(p))
-	{		
+	{
 		if(u.wordPrev(p) != NULL)
 			strcpy(word_prev,u.cell(u.wordPrev(p)).getWord());
-			
-		if (mirar_etiq(10000,i,pos)==1 && mirar_etiq(40000,i,pos)==1){ //POS_ES_VERB_SIMP,POS_ES_ADJ			
-				if (mirar_etiq(20000,i,pos)==1){//POS_ES_OTRO_SUST 
+
+		if (mirar_etiq(10000,i,pos)==1 && mirar_etiq(40000,i,pos)==1){ //POS_ES_VERB_SIMP,POS_ES_ADJ
+				if (mirar_etiq(20000,i,pos)==1){//POS_ES_OTRO_SUST
 				//si una palabra tiene la etiqueta de verbo, adjetivo y sustantivo
 					if(u.wordPrev(p) != NULL){
 						if (mirar_etiq(8,i-1,pos)==1 || mirar_etiq(200,i-1,pos)==1 || mirar_etiq(800,i-1,pos)==1 ||mirar_etiq(20,i-1,pos)==1 ||  //POS_ES_DEMO_NOVERB ,POS_ES_INDNUM_NOVERB,POS_ES_CARD_NOVERB,POS_ES_POSE_NOVER
@@ -701,7 +697,7 @@ INT LangES_Categ::desambiguar(UttWS & u, etiquetas *pos)
 							//si la palabra anterior es de tipo no pre verbo , o "un, "una, "unos" o "unas",la palabra sera  adjetivo o sustantivo
 							if (mirar_etiq(20000,i-1,pos)==1){ //POS_ES_OTRO_SUST
 								u.cell(p).setPOS(POS_ES_OTRO_SUST); //si la palabra anterior no es sustantivo, la palabra  sera sustantivo ya que por lo general los adjetivos van detras de los sustantivos
-							}	
+							}
 							else{
 								u.cell(p).setPOS(POS_ES_ADJ); //si la palabra anterior es sustantivo, por lo general la siguiente palabra sera adjetivo y no otro sustantivo
 							}
@@ -718,7 +714,7 @@ INT LangES_Categ::desambiguar(UttWS & u, etiquetas *pos)
 					if(u.wordPrev(p) != NULL){
 						if (mirar_etiq(8,i-1,pos)==1 || mirar_etiq(200,i-1,pos)==1 || mirar_etiq(800,i-1,pos)==1 ||mirar_etiq(20,i-1,pos)==1 ||  //POS_ES_DEMO_NOVERB ,POS_ES_INDNUM_NOVERB,POS_ES_CARD_NOVERB,POS_ES_POSE_NOVER
 							strcmp("un", word_prev) == 0 || strcmp("una", word_prev) == 0 || strcmp("unos", word_prev) == 0 || strcmp("unas", word_prev) == 0 ) {
-								//si la palabra anterior es de tipo no pre verbo , o "un, "una, "unos" o "unas",la palabra sera  adjetivo 
+								//si la palabra anterior es de tipo no pre verbo , o "un, "una, "unos" o "unas",la palabra sera  adjetivo
 							u.cell(p).setPOS(POS_ES_ADJ);
 						}
 						else{
@@ -729,9 +725,9 @@ INT LangES_Categ::desambiguar(UttWS & u, etiquetas *pos)
 						u.cell(p).setPOS(POS_ES_ADJ); //si no hay palabra anterior, dejamos la primera etiqueta que se encuentra, que es adjetivo
 					}
 				}
-		}		
+		}
 		else{
-				if (mirar_etiq(10000,i,pos)==1 && mirar_etiq(20000,i,pos)==1 && mirar_etiq(40000,i,pos)==0  ){//POS_ES_VERB_SIMP,POS_ES_OTRO_SUST , no POS_ES_ADJ 
+				if (mirar_etiq(10000,i,pos)==1 && mirar_etiq(20000,i,pos)==1 && mirar_etiq(40000,i,pos)==0  ){//POS_ES_VERB_SIMP,POS_ES_OTRO_SUST , no POS_ES_ADJ
 				//si solo tiene la etiqueta de verbo y sustantivo
 					if(u.wordPrev(p) != NULL){
 						if (mirar_etiq(8,i-1,pos)==1 || mirar_etiq(200,i-1,pos)==1 || mirar_etiq(800,i-1,pos)==1 ||mirar_etiq(20,i-1,pos)==1 ||  //POS_ES_DEMO_NOVERB ,POS_ES_INDNUM_NOVERB,POS_ES_CARD_NOVERB,POS_ES_POSE_NOVER
@@ -741,22 +737,22 @@ INT LangES_Categ::desambiguar(UttWS & u, etiquetas *pos)
 						}
 						else{
 							u.cell(p).setPOS(POS_ES_VERB_SIMP); //en caso contrario podra ser verbo
-						}						 
+						}
 					}
 					else{
 						u.cell(p).setPOS(POS_ES_VERB_SIMP);//si no hay palabra anterior, dejamos la primera etiqueta que se encuentra, que es verbo simple
 					}
-				}				
-						
-				else{		
+				}
+
+				else{
 				//desambiguacion entre sustantivos y adjetivos
 				if (mirar_etiq(40000,i,pos)==1){//POS_ES_ADJ
-					if (mirar_etiq(20000,i,pos)==1){//POS_ES_OTRO_SUST 				
+					if (mirar_etiq(20000,i,pos)==1){//POS_ES_OTRO_SUST
 						//si la palabra tiene la etiqueta de sustantivo y adjetivo
 						if(u.wordPrev(p) != NULL){
-							if (mirar_etiq(20000,i-1,pos)==0 || strcmp("la", word_prev) == 0 || strcmp("las", word_prev) == 0 || strcmp("los", word_prev) == 0 ){// no POS_ES_OTRO_SUST 
+							if (mirar_etiq(20000,i-1,pos)==0 || strcmp("la", word_prev) == 0 || strcmp("las", word_prev) == 0 || strcmp("los", word_prev) == 0 ){// no POS_ES_OTRO_SUST
 								u.cell(p).setPOS(POS_ES_OTRO_SUST); //si la palabra anterior no es sustantivo, (o es "la","las", "lo" que una de sus etiquetas es sustantivo)la palabra  sera sustantivo ya que por lo general los adjetivos van detras de los sustantivos
-							}	
+							}
 							else{
 								u.cell(p).setPOS(POS_ES_ADJ); //si la palabra anterior es sustantivo, por lo general la siguiente palabra sera adjetivo y no otro sustantivo
 							}
@@ -766,14 +762,14 @@ INT LangES_Categ::desambiguar(UttWS & u, etiquetas *pos)
 						}
 					}
 					else{
-						u.cell(p).setPOS(POS_ES_ADJ); 
+						u.cell(p).setPOS(POS_ES_ADJ);
 					}
 				}
 				else{
 					if (mirar_etiq(800,i,pos)==1){//POS_ES_CARD_NOVERB
-						if(mirar_etiq(400,i,pos)==1){//POS_ES_INDNUM_IND 							
+						if(mirar_etiq(400,i,pos)==1){//POS_ES_INDNUM_IND
 							if(u.wordNext(p) != NULL){
-								if (mirar_etiq(20000,i+1,pos)==1 || mirar_etiq(40000,i+1,pos)==1){//POS_ES_OTRO_SUST , POS_ES_ADJ																
+								if (mirar_etiq(20000,i+1,pos)==1 || mirar_etiq(40000,i+1,pos)==1){//POS_ES_OTRO_SUST , POS_ES_ADJ
 									u.cell(p).setPOS(POS_ES_CARD_NOVERB); //para desambiguar cardinales no pre verbo de indefinidos numerales indiferente (un)
 								}
 								else{
@@ -787,17 +783,17 @@ INT LangES_Categ::desambiguar(UttWS & u, etiquetas *pos)
 						else{
 							u.cell(p).setPOS(POS_ES_CARD_NOVERB);
 						}
-					}			
+					}
 					else{
-						if (mirar_etiq(1000,i,pos)==1 && mirar_etiq(10000,i,pos)==1 ){//POS_ES_CARD_IND,POS_ES_VERB_SIMP 							
-								//si tiene la etiqueta de cardinal indiferente y verbo (una, unas, uno)							
+						if (mirar_etiq(1000,i,pos)==1 && mirar_etiq(10000,i,pos)==1 ){//POS_ES_CARD_IND,POS_ES_VERB_SIMP
+								//si tiene la etiqueta de cardinal indiferente y verbo (una, unas, uno)
 								if(u.wordPrev(p) != NULL){
-									if (mirar_etiq(8,i-1,pos)==1 || mirar_etiq(200,i-1,pos)==1 || mirar_etiq(800,i-1,pos)==1 ||mirar_etiq(20,i-1,pos)==1 ){  //POS_ES_DEMO_NOVERB ,POS_ES_INDNUM_NOVERB,POS_ES_CARD_NOVERB,POS_ES_POSE_NOVER					
+									if (mirar_etiq(8,i-1,pos)==1 || mirar_etiq(200,i-1,pos)==1 || mirar_etiq(800,i-1,pos)==1 ||mirar_etiq(20,i-1,pos)==1 ){  //POS_ES_DEMO_NOVERB ,POS_ES_INDNUM_NOVERB,POS_ES_CARD_NOVERB,POS_ES_POSE_NOVER
 										u.cell(p).setPOS(POS_ES_CARD_IND); //si la palabra anterior es de tipo no pre verbo, la palabra actual no podra ser verbo, sera cardinal
 									}
 									else{
 										if(u.wordNext(p) != NULL){
-											if (mirar_etiq(20000,i+1,pos)==1 || mirar_etiq(40000,i+1,pos)==1){  //POS_ES_OTRO_SUST,POS_ES_ADJ																				
+											if (mirar_etiq(20000,i+1,pos)==1 || mirar_etiq(40000,i+1,pos)==1){  //POS_ES_OTRO_SUST,POS_ES_ADJ
 												u.cell(p).setPOS(POS_ES_CARD_IND); //si la siguiente palabra es sustantivo o adjetivo, lo mas probable es que la palabra actual sea cardinal y no verbo
 											}
 											else{
@@ -805,24 +801,24 @@ INT LangES_Categ::desambiguar(UttWS & u, etiquetas *pos)
 											}
 										}
 									}
-								}						
+								}
 								else{
 									if(u.wordNext(p) != NULL){
-										if (mirar_etiq(20000,i+1,pos)==1 || mirar_etiq(40000,i+1,pos)==1){  //POS_ES_OTRO_SUST,POS_ES_ADJ											
+										if (mirar_etiq(20000,i+1,pos)==1 || mirar_etiq(40000,i+1,pos)==1){  //POS_ES_OTRO_SUST,POS_ES_ADJ
 											u.cell(p).setPOS(POS_ES_CARD_IND); //si la siguiente palabra es sustantivo o adjetivo, lo mas probable es que la palabra actual sea cardinal y no verbo
 										}
 										else{
 											u.cell(p).setPOS(POS_ES_VERB_SIMP); //si no se cumplen la condicion anterior, podra ser verbo
 										}
-									}					
+									}
 								}
-						}						
+						}
 						else{
-							if (mirar_etiq(10040,i,pos)==1 && mirar_etiq(20000,i,pos)==1){//POS_ES_VERB_PPIO,POS_ES_OTRO_SUST							
+							if (mirar_etiq(10040,i,pos)==1 && mirar_etiq(20000,i,pos)==1){//POS_ES_VERB_PPIO,POS_ES_OTRO_SUST
 									//para desambiaguar entre participio y sustantivo (por ejemplo, conocido)
 									if(u.wordPrev(p) != NULL){
 										if (strcmp("la", word_prev)!= 0 && strcmp("las", word_prev)!= 0 && strcmp("los", word_prev)!= 0){//la, las, lo tambien tienen como etiqueta el sustantivo, pero por lo general no tienen esa funcion
-											if (mirar_etiq(10000,i-1,pos)==1 || mirar_etiq(10010,i-1,pos)==1 || mirar_etiq(20000,i-1,pos)==1 ){ //POS_ES_VERB_SIMP,POS_ES_VERB_COMP,POS_ES_OTRO_SUST																		
+											if (mirar_etiq(10000,i-1,pos)==1 || mirar_etiq(10010,i-1,pos)==1 || mirar_etiq(20000,i-1,pos)==1 ){ //POS_ES_VERB_SIMP,POS_ES_VERB_COMP,POS_ES_OTRO_SUST
 												u.cell(p).setPOS(POS_ES_VERB_PPIO); //si la palabra anterior es de tipo verbo(simple o compuesto "fue conocido" "habia conocido") o sustantivo (el pueblo "conocido") y no es de tipo pre verbo, entonces la palabra actual sera participio
 											}
 											else{
@@ -836,14 +832,14 @@ INT LangES_Categ::desambiguar(UttWS & u, etiquetas *pos)
 									else{
 										u.cell(p).setPOS(POS_ES_VERB_PPIO);//si no hay palabra anterior, por lo general sera participio
 									}
-							}						
-							else{// para el resto de casos se deja la primera etiqueta que se encuentre				
+							}
+							else{// para el resto de casos se deja la primera etiqueta que se encuentre
 								if (mirar_etiq(1,i,pos)==1){//POS_ES_SUSP_VERB
 									u.cell(p).setPOS(POS_ES_SUSP_VERB);
 								}
-								else if (mirar_etiq(2,i,pos)==1){//POS_ES_SUSP_IND								
+								else if (mirar_etiq(2,i,pos)==1){//POS_ES_SUSP_IND
 									u.cell(p).setPOS(POS_ES_SUSP_IND);
-								}	
+								}
 								else if (mirar_etiq(4,i,pos)==1){//POS_ES_SUSP_NPV
 										u.cell(p).setPOS(POS_ES_SUSP_NPV);
 								}
@@ -897,30 +893,30 @@ INT LangES_Categ::desambiguar(UttWS & u, etiquetas *pos)
 								}
 								else if (mirar_etiq(10020,i,pos)==1){//POS_ES_VERB_GERU
 									u.cell(p).setPOS(POS_ES_VERB_GERU);
-								}	
+								}
 								else if (mirar_etiq(10040,i,pos)==1){//POS_ES_VERB_PPIO
 									u.cell(p).setPOS(POS_ES_VERB_PPIO);
-								}	
+								}
 								else if (mirar_etiq(10100,i,pos)==1){//POS_ES_VERB_IR1C
 									u.cell(p).setPOS(POS_ES_VERB_IR1C);
-								}													
+								}
 								else if (mirar_etiq(10200,i,pos)==1){//POS_ES_VERB_IR2C
 									u.cell(p).setPOS(POS_ES_VERB_IR2C);
-								}													
+								}
 								else if (mirar_etiq(10400,i,pos)==1){//POS_ES_VERB_IR3C
 									u.cell(p).setPOS(POS_ES_VERB_IR3C);
-								}														
+								}
 								else if (mirar_etiq(10800,i,pos)==1){//POS_ES_VERB_IICC
 									u.cell(p).setPOS(POS_ES_VERB_IICC);
-								}																				
+								}
 								else if (mirar_etiq(20000,i,pos)==1){//POS_ES_OTRO_SUST
 									u.cell(p).setPOS(POS_ES_OTRO_SUST);
-								}																	
+								}
 								else if (mirar_etiq(40000,i,pos)==1){//POS_ES_ADJ
 									u.cell(p).setPOS(POS_ES_ADJ);
-								}																
-																															
-							}																											
+								}
+
+							}
 						}
 					}
 				}
@@ -928,14 +924,14 @@ INT LangES_Categ::desambiguar(UttWS & u, etiquetas *pos)
 		}
 		i++;
 	}
-																								
-		
+
+
 	// for(p=u.wordFirst(); p!=NULL; p=u.wordNext(p))
 	// {
 		// if(u.wordPrev(p) != NULL)
 			// strcpy(word_prev,u.cell(u.wordPrev(p)).getWord());
-			
-		// if (u.cell(p).queryPOS(POS_ES_VERB_SIMP) == 1 ){		
+
+		// if (u.cell(p).queryPOS(POS_ES_VERB_SIMP) == 1 ){
 			// if (u.cell(p).queryPOS(POS_ES_ADJ) == 1 ){
 				// if (u.cell(p).queryPOS(POS_ES_OTRO_SUST) == 1 ){ //si una palabra tiene la etiqueta de verbo, adjetivo y sustantivo
 					// if(u.wordPrev(p) != NULL){
@@ -943,7 +939,7 @@ INT LangES_Categ::desambiguar(UttWS & u, etiquetas *pos)
 							//si la palabra anterior es de tipo no pre verbo , la palabra sera  adjetivo o sustantivo
 							// if (u.cell(u.wordPrev(p)).queryPOS(POS_ES_OTRO_SUST) == 0){
 								// u.cell(p).setPOS(POS_ES_OTRO_SUST); //si la palabra anterior no es sustantivo, la palabra  sera sustantivo ya que por lo general los adjetivos van detras de los sustantivos
-							// }	
+							// }
 							// else{
 								// u.cell(p).setPOS(POS_ES_ADJ); //si la palabra anterior es sustantivo, por lo general la siguiente palabra sera adjetivo y no otro sustantivo
 							// }
@@ -959,7 +955,7 @@ INT LangES_Categ::desambiguar(UttWS & u, etiquetas *pos)
 				// else{ //si solo tiene la etiqueta de verbo y adjetivo (y no la de sustantivo)
 					// if(u.wordPrev(p) != NULL){
 						// if (u.cell(u.wordPrev(p)).queryPOS(POS_ES_DEMO_NOVERB) == 1  || u.cell(u.wordPrev(p)).queryPOS(POS_ES_INDNUM_NOVERB) == 1 || u.cell(u.wordPrev(p)).queryPOS(POS_ES_CARD_NOVERB) == 1  || u.cell(u.wordPrev(p)).queryPOS(POS_ES_POSE_NOVERB) == 1 || strcmp("un", word_prev) == 0 || strcmp("una", word_prev) == 0 || strcmp("unos", word_prev) == 0 || strcmp("unas", word_prev) == 0 ) {
-							//si la palabra anterior es de tipo no pre verbo , la palabra sera  adjetivo 
+							//si la palabra anterior es de tipo no pre verbo , la palabra sera  adjetivo
 							// u.cell(p).setPOS(POS_ES_ADJ);
 						// }
 						// else{
@@ -975,12 +971,12 @@ INT LangES_Categ::desambiguar(UttWS & u, etiquetas *pos)
 				// if (u.cell(p).queryPOS(POS_ES_OTRO_SUST) == 1 ){ //si solo tiene la etiqueta de verbo y sustantivo
 					// if(u.wordPrev(p) != NULL){
 						// if (u.cell(u.wordPrev(p)).queryPOS(POS_ES_DEMO_NOVERB) == 1  || u.cell(u.wordPrev(p)).queryPOS(POS_ES_INDNUM_NOVERB) == 1 || u.cell(u.wordPrev(p)).queryPOS(POS_ES_CARD_NOVERB) == 1  || u.cell(u.wordPrev(p)).queryPOS(POS_ES_POSE_NOVERB) == 1 || strcmp("un", word_prev) == 0 || strcmp("una", word_prev) == 0 || strcmp("unos", word_prev) == 0 || strcmp("unas", word_prev) == 0 ) {
-							//si la palabra anterior es de tipo no pre verbo, la palabra sera  sustantivo 
+							//si la palabra anterior es de tipo no pre verbo, la palabra sera  sustantivo
 							// u.cell(p).setPOS(POS_ES_OTRO_SUST);
 						// }
 						// else{
 							// u.cell(p).setPOS(POS_ES_VERB_SIMP); //en caso contrario podra ser verbo
-						// }						 
+						// }
 						// if(strcmp("un", word_prev))
 							// u.cell(p).setPOS(POS_ES_OTRO_SUST);
 					// }
@@ -991,16 +987,16 @@ INT LangES_Categ::desambiguar(UttWS & u, etiquetas *pos)
 				// else{ //si tiene la etiqueta de verbo pero no la de sustantivo o adjetivo
 					// u.cell(p).setPOS(POS_ES_VERB_SIMP);
 				// }
-			// }						
-		// }	
-		// else{		
+			// }
+		// }
+		// else{
 			//desambiguacion entre sustantivos y adjetivos
 			// if (u.cell(p).queryPOS(POS_ES_ADJ) == 1){
 				// if (u.cell(p).queryPOS(POS_ES_OTRO_SUST) == 1 ){ //si la palabra tiene la etiqueta de sustantivo y adjetivo
 					// if(u.wordPrev(p) != NULL){
 						// if (u.cell(u.wordPrev(p)).queryPOS(POS_ES_OTRO_SUST) == 0 ){
 							// u.cell(p).setPOS(POS_ES_OTRO_SUST); //si la palabra anterior no es sustantivo, la palabra  sera sustantivo ya que por lo general los adjetivos van detras de los sustantivos
-						// }	
+						// }
 						// else{
 							// u.cell(p).setPOS(POS_ES_ADJ); //si la palabra anterior es sustantivo, por lo general la siguiente palabra sera adjetivo y no otro sustantivo
 						// }
@@ -1010,14 +1006,14 @@ INT LangES_Categ::desambiguar(UttWS & u, etiquetas *pos)
 					// }
 				// }
 				// else{
-					// u.cell(p).setPOS(POS_ES_ADJ); 
+					// u.cell(p).setPOS(POS_ES_ADJ);
 				// }
 			// }
 			// else{
 				// if (u.cell(p).queryPOS(POS_ES_CARD_NOVERB) == 1) {
 					// if (u.cell(p).queryPOS(POS_ES_INDNUM_IND) == 1 ){
 						// if(u.wordNext(p) != NULL){
-							// if (u.cell(u.wordNext(p)).queryPOS(POS_ES_OTRO_SUST) == 1 || u.cell(u.wordNext(p)).queryPOS(POS_ES_ADJ) == 1){					
+							// if (u.cell(u.wordNext(p)).queryPOS(POS_ES_OTRO_SUST) == 1 || u.cell(u.wordNext(p)).queryPOS(POS_ES_ADJ) == 1){
 								// u.cell(p).setPOS(POS_ES_CARD_NOVERB); //para desambiguar cardinales no pre verbo de indefinidos numerales indiferente (un)
 							// }
 							// else{
@@ -1031,11 +1027,11 @@ INT LangES_Categ::desambiguar(UttWS & u, etiquetas *pos)
 					// else{
 						// u.cell(p).setPOS(POS_ES_CARD_NOVERB);
 					// }
-				// }			
+				// }
 				// else{
 					// if (u.cell(p).queryPOS(POS_ES_CARD_IND) == 1 && u.cell(p).queryPOS(POS_ES_VERB_SIMP) == 1 ){ //si tiene la etiqueta de cardinal indiferente y verbo (una, unas, uno)
 						// if(u.wordPrev(p) != NULL){
-							// if (u.cell(u.wordPrev(p)).queryPOS(POS_ES_DEMO_NOVERB) == 1 || u.cell(u.wordPrev(p)).queryPOS(POS_ES_INDNUM_NOVERB) == 1  || u.cell(u.wordPrev(p)).queryPOS(POS_ES_CARD_NOVERB) == 1  || u.cell(u.wordPrev(p)).queryPOS(POS_ES_POSE_NOVERB) == 1 ){ 
+							// if (u.cell(u.wordPrev(p)).queryPOS(POS_ES_DEMO_NOVERB) == 1 || u.cell(u.wordPrev(p)).queryPOS(POS_ES_INDNUM_NOVERB) == 1  || u.cell(u.wordPrev(p)).queryPOS(POS_ES_CARD_NOVERB) == 1  || u.cell(u.wordPrev(p)).queryPOS(POS_ES_POSE_NOVERB) == 1 ){
 								// u.cell(p).setPOS(POS_ES_CARD_IND); //si la palabra anterior es de tipo no pre verbo, la palabra actual no podra ser verbo, sera cardinal
 							// }
 							// else{
@@ -1057,7 +1053,7 @@ INT LangES_Categ::desambiguar(UttWS & u, etiquetas *pos)
 								// else{
 									// u.cell(p).setPOS(POS_ES_VERB_SIMP); //si no se cumplen la condicion anterior, podra ser verbo
 								// }
-							// }					
+							// }
 						// }
 					// }
 					// else{
@@ -1074,18 +1070,18 @@ INT LangES_Categ::desambiguar(UttWS & u, etiquetas *pos)
 								// u.cell(p).setPOS(POS_ES_VERB_PPIO);//si no hay palabra anterior, por lo general sera participio
 							// }
 						// }
-						// else{// para el resto de casos se deja la primera etiqueta que se encuentre				
+						// else{// para el resto de casos se deja la primera etiqueta que se encuentre
 							// if (u.cell(p).queryPOS(POS_ES_SUSP_VERB) == 1){
 								// u.cell(p).setPOS(POS_ES_SUSP_VERB);
 							// }
-								
+
 						// }
 					// }
 				// }
 			// }
 		// }
-	// }		
-	
+	// }
+
 	delete pos;
 	return 1;
 }
@@ -1108,7 +1104,7 @@ INT LangES_Categ::es_verbo(UttWS &u, UttI p, CHAR *word_act, int i, etiquetas *p
 	href = u.getHDicDB()->search(word_act); // Buscamos en el diccionario el verbo
 
 	// Verbos
-	switch (u.getHDicDB()->query(href ,HDIC_QUERY_ES_VERB)) 
+	switch (u.getHDicDB()->query(href ,HDIC_QUERY_ES_VERB))
 	{
 		case HDIC_QUERY_ES_VERB_SIMP: // Simple (_soy)
 			u.cell(p).setPOS(POS_ES_VERB_SIMP);
@@ -1204,7 +1200,7 @@ INT LangES_Categ::es_enclitico(UttWS &u, UttI p,int i, etiquetas *pos)
 			strcpy(raiz, word_act);
 			raiz[tam-2]='\0';
 			u.cell(p).setWord(raiz);
-			if(es_verbo(u, p, raiz,i,pos)) 
+			if(es_verbo(u, p, raiz,i,pos))
 			{
 				u.cell(p).setWord(word_orig);
 				free(word_orig);
@@ -1248,7 +1244,7 @@ INT LangES_Categ::es_enclitico(UttWS &u, UttI p,int i, etiquetas *pos)
 				free(word_orig);
 				return 1;
 			}
-			
+
 			if(tam >6)
 			{
 				if(!strcmp("nos", &raiz[tam-6]) )
@@ -1261,7 +1257,7 @@ INT LangES_Categ::es_enclitico(UttWS &u, UttI p,int i, etiquetas *pos)
 					strcpy(raiz, word_act);
 					raiz[tam-6]='\0';
 					u.cell(p).setWord(raiz);
-					if(es_verbo(u, p, raiz,i,pos)) 
+					if(es_verbo(u, p, raiz,i,pos))
 					{
 						u.cell(p).setWord(word_orig);
 						free(word_orig);
@@ -1301,7 +1297,7 @@ INT LangES_Categ::es_enclitico(UttWS &u, UttI p,int i, etiquetas *pos)
 			strcpy(raiz, word_act);
 			raiz[tam-3]='\0';
 			u.cell(p).setWord(raiz);
-			if(es_verbo(u, p, raiz,i,pos)) 
+			if(es_verbo(u, p, raiz,i,pos))
 			{
 				u.cell(p).setWord(word_orig);
 				free(word_orig);
@@ -1312,7 +1308,7 @@ INT LangES_Categ::es_enclitico(UttWS &u, UttI p,int i, etiquetas *pos)
 				strcpy(raiz, word_act);
 				raiz[tam-5]='\0';
 				u.cell(p).setWord(raiz);
-				if(es_verbo(u, p, raiz,i,pos)) 
+				if(es_verbo(u, p, raiz,i,pos))
 				{
 					u.cell(p).setWord(word_orig);
 					free(word_orig);
@@ -1331,7 +1327,7 @@ INT LangES_Categ::es_enclitico(UttWS &u, UttI p,int i, etiquetas *pos)
 			strcpy(raiz, word_act);
 			raiz[tam-2]='\0';
 			u.cell(p).setWord(raiz);
-			if(es_verbo(u, p, raiz,i,pos)) 
+			if(es_verbo(u, p, raiz,i,pos))
 			{
 				u.cell(p).setWord(word_orig);
 				free(word_orig);
@@ -1347,10 +1343,10 @@ INT LangES_Categ::es_enclitico(UttWS &u, UttI p,int i, etiquetas *pos)
 
 INT LangES_Categ::posdic(UttWS &u, UttI p,int i, etiquetas *pos)
 {
-	int etiq=0; 
-	
+	int etiq=0;
+
 	// Sustantivos Personales
-	switch (u.getHDicDB()->query(u.cell(p).getHDicRef(),HDIC_QUERY_ES_SUSP)) 
+	switch (u.getHDicDB()->query(u.cell(p).getHDicRef(),HDIC_QUERY_ES_SUSP))
 	{
 		case HDIC_QUERY_ES_SUSP_VERB: // pre-post verbo (_me voy; vamonos)
 			// u.cell(p).addPOS(POS_ES_SUSP_VERB);
@@ -1427,7 +1423,7 @@ INT LangES_Categ::posdic(UttWS &u, UttI p,int i, etiquetas *pos)
 	}
 
 	// Demostrativos
-	switch (u.getHDicDB()->query(u.cell(p).getHDicRef(),HDIC_QUERY_ES_DEMO)) 
+	switch (u.getHDicDB()->query(u.cell(p).getHDicRef(),HDIC_QUERY_ES_DEMO))
 	{
 		case HDIC_QUERY_ES_DEMO_NOVERB: // no pre verbo (_esta casa)
 			//u.cell(p).addPOS(POS_ES_DEMO_NOVERB);
@@ -1506,7 +1502,7 @@ INT LangES_Categ::posdic(UttWS &u, UttI p,int i, etiquetas *pos)
 	}
 
 	// Posesivos
-	switch (u.getHDicDB()->query(u.cell(p).getHDicRef(),HDIC_QUERY_ES_POSE)) 
+	switch (u.getHDicDB()->query(u.cell(p).getHDicRef(),HDIC_QUERY_ES_POSE))
 	{
 		case HDIC_QUERY_ES_POSE_NOVERB: // no pre verbo (_mi casa)
 			//u.cell(p).addPOS(POS_ES_POSE_NOVERB);
@@ -1559,7 +1555,7 @@ INT LangES_Categ::posdic(UttWS &u, UttI p,int i, etiquetas *pos)
 	}
 
 	// Relativos
-	switch (u.getHDicDB()->query(u.cell(p).getHDicRef(),HDIC_QUERY_ES_REL)) 
+	switch (u.getHDicDB()->query(u.cell(p).getHDicRef(),HDIC_QUERY_ES_REL))
 	{
 		case HDIC_QUERY_ES_REL_AT:
 			//u.cell(p).addPOS(POS_ES_RELA);
@@ -1612,7 +1608,7 @@ INT LangES_Categ::posdic(UttWS &u, UttI p,int i, etiquetas *pos)
 	}
 
 	// Indefinidos y Numerales
-	switch (u.getHDicDB()->query(u.cell(p).getHDicRef(),HDIC_QUERY_ES_INDNUM)) 
+	switch (u.getHDicDB()->query(u.cell(p).getHDicRef(),HDIC_QUERY_ES_INDNUM))
 	{
 		case HDIC_QUERY_ES_INDNUM_NOVERB: // no pre verbo (_algún comentario)
 			//u.cell(p).addPOS(POS_ES_INDNUM_NOVERB);
@@ -1666,7 +1662,7 @@ INT LangES_Categ::posdic(UttWS &u, UttI p,int i, etiquetas *pos)
 	}
 
 	// Numerales Cardinales
-	switch (u.getHDicDB()->query(u.cell(p).getHDicRef(),HDIC_QUERY_ES_CARD)) 
+	switch (u.getHDicDB()->query(u.cell(p).getHDicRef(),HDIC_QUERY_ES_CARD))
 	{
 		case HDIC_QUERY_ES_CARD_NOVERB: // no pre verbo (_un comentario)
 			//u.cell(p).addPOS(POS_ES_CARD_NOVERB);
@@ -1719,9 +1715,9 @@ INT LangES_Categ::posdic(UttWS &u, UttI p,int i, etiquetas *pos)
 	}
 
 	// Advervios
-	switch (u.getHDicDB()->query(u.cell(p).getHDicRef(),HDIC_QUERY_ES_ADVE)) 
+	switch (u.getHDicDB()->query(u.cell(p).getHDicRef(),HDIC_QUERY_ES_ADVE))
 	{
-		case HDIC_QUERY_ES_ADVER: 
+		case HDIC_QUERY_ES_ADVER:
 			//u.cell(p).addPOS(POS_ES_ADVE);
 			if (pos[i].contador==0){
 				pos[i].pos1=2000;
@@ -1748,9 +1744,9 @@ INT LangES_Categ::posdic(UttWS &u, UttI p,int i, etiquetas *pos)
 	}
 
 	// Preposiciones
-	switch (u.getHDicDB()->query(u.cell(p).getHDicRef(),HDIC_QUERY_ES_PREP)) 
+	switch (u.getHDicDB()->query(u.cell(p).getHDicRef(),HDIC_QUERY_ES_PREP))
 	{
-		case HDIC_QUERY_ES_PREPOS: 
+		case HDIC_QUERY_ES_PREPOS:
 			//u.cell(p).addPOS(POS_ES_PREP);
 			if (pos[i].contador==0){
 				pos[i].pos1=4000;
@@ -1777,9 +1773,9 @@ INT LangES_Categ::posdic(UttWS &u, UttI p,int i, etiquetas *pos)
 	}
 
 	// Conjunciones
-	switch (u.getHDicDB()->query(u.cell(p).getHDicRef(),HDIC_QUERY_ES_CONJ)) 
+	switch (u.getHDicDB()->query(u.cell(p).getHDicRef(),HDIC_QUERY_ES_CONJ))
 	{
-		case HDIC_QUERY_ES_CONJUN: 
+		case HDIC_QUERY_ES_CONJUN:
 			//u.cell(p).addPOS(POS_ES_CONJ);
 			if (pos[i].contador==0){
 				pos[i].pos1=8000;
@@ -1804,9 +1800,9 @@ INT LangES_Categ::posdic(UttWS &u, UttI p,int i, etiquetas *pos)
 			etiq=1;
 			break;
 	}
-	
+
 	// Verbos
-	switch (u.getHDicDB()->query(u.cell(p).getHDicRef(),HDIC_QUERY_ES_VERB)) 
+	switch (u.getHDicDB()->query(u.cell(p).getHDicRef(),HDIC_QUERY_ES_VERB))
 	{
 		case HDIC_QUERY_ES_VERB_SIMP: // Simple (_soy)
 			//u.cell(p).addPOS(POS_ES_VERB_SIMP);
@@ -1980,9 +1976,9 @@ INT LangES_Categ::posdic(UttWS &u, UttI p,int i, etiquetas *pos)
 	}
 
 	// Otros (sustantivos y adjetivos para desambiüar verbos)
-	switch (u.getHDicDB()->query(u.cell(p).getHDicRef(),HDIC_QUERY_ES_OTRO)) 
+	switch (u.getHDicDB()->query(u.cell(p).getHDicRef(),HDIC_QUERY_ES_OTRO))
 	{
-		case HDIC_QUERY_ES_OTRO_SUST: 
+		case HDIC_QUERY_ES_OTRO_SUST:
 			//u.cell(p).addPOS(POS_ES_OTRO_SUST);
 			//printf("etiq=POS_ES_OTRO_SUST \n");
 			if (pos[i].contador==0){
@@ -2008,27 +2004,27 @@ INT LangES_Categ::posdic(UttWS &u, UttI p,int i, etiquetas *pos)
 			etiq=1;
 			break;
 	}
-	
+
 	i++;
 	if (etiq==1) //si tiene una o mas etiquetas de pos
-		return 1; 
+		return 1;
 	else
 		return 0;
 }
 
 // #########################################################################
-// ##  Para desechar aquellas palabras que no pueden ser verbos 
+// ##  Para desechar aquellas palabras que no pueden ser verbos
 // ## y para marcar los posibles verbos. Aplicar la gramática y
 // ## maldecir las irregularidades
 // #########################################################################
 
 INT LangES_Categ::puede_ser_verbo(UttWS &u,UttI p,char *word_act,int i,etiquetas *pos)
 {
-	
+
 	CHAR letra_final = 0;
 	INT tam = 0;
 	CHAR temporal[MAX_TAM_WORD]="\0";
-	
+
 	tam = strlen(word_act);
 	letra_final = word_act[tam-1];
 
@@ -2045,21 +2041,21 @@ INT LangES_Categ::puede_ser_verbo(UttWS &u,UttI p,char *word_act,int i,etiquetas
 					// ##########################
 					// # "aría", "ería", "iría" # // 1ª, 2ª o 3ª
 					// ##########################
-				
+
 					if(buscar_infinitivo(u, p, word_act,  3, 0, 4)) return 1;
 				}
 				if(!strcmp("iera", &word_act[tam-4])) {
 					// ##########
 					// # 'iera' # // 2ª o 3ª
 					// ##########
-					
+
 					if(buscar_infinitivo(u, p, word_act,  3, 1, 4)) return 1;
 				}
 			}
-			
+
 			if(tam>3){
 				if( !strcmp("aba", &word_act[tam-3])||
-					!strcmp("ara", &word_act[tam-3])) 
+					!strcmp("ara", &word_act[tam-3]))
 				{
 					// ###############
 					// # "aba" "ara" # / 1ª
@@ -2068,7 +2064,7 @@ INT LangES_Categ::puede_ser_verbo(UttWS &u,UttI p,char *word_act,int i,etiquetas
 					if(buscar_infinitivo(u, p, word_act,  1, 0, 3)) return 1;
 				}
 			}
-			
+
 			if(tam>2) {
 				if(!strcmp("ía", &word_act[tam-2])) // para no salirnos de madre
 				{
@@ -2078,7 +2074,7 @@ INT LangES_Categ::puede_ser_verbo(UttWS &u,UttI p,char *word_act,int i,etiquetas
 
 					if(buscar_infinitivo(u, p, word_act,  3, 1, 2)) return 1;
 				}
-				
+
 					// #######
 					// # 'a' # // 1ª, 2ª o 3ª
 					// #######
@@ -2104,7 +2100,7 @@ INT LangES_Categ::puede_ser_verbo(UttWS &u,UttI p,char *word_act,int i,etiquetas
 						return 1;
 					}
 				}
-								
+
 				// ****************************************************
 				// * irregularidades gráficas "distinga" "distinguir" *
 				// ****************************************************
@@ -2112,7 +2108,7 @@ INT LangES_Categ::puede_ser_verbo(UttWS &u,UttI p,char *word_act,int i,etiquetas
 				if(word_act[tam-2] == 'g'){
 					strcpy(temporal, word_act);
 					temporal[tam-1] = 'u';
-					if(buscar_infinitivo(u, p, temporal,  3, 2, 0)) 
+					if(buscar_infinitivo(u, p, temporal,  3, 2, 0))
 					{
 						//u.cell(p).setPOS(POS_ES_VERB_SIMP_DEBIL);
 						pos[i].pos1=10001;//POS_ES_VERB_SIMP_DEBIL
@@ -2126,7 +2122,7 @@ INT LangES_Categ::puede_ser_verbo(UttWS &u,UttI p,char *word_act,int i,etiquetas
 			if(tam>3) {
 				if( !strcmp("ará", &word_act[tam-3]) ||
 					!strcmp("erá", &word_act[tam-3]) ||
-					!strcmp("irá", &word_act[tam-3])) 
+					!strcmp("irá", &word_act[tam-3]))
 				{
 					// #######################
 					// # "ará", "erá", "irá" # // 1ª, 2ª o 3ª
@@ -2141,12 +2137,12 @@ INT LangES_Categ::puede_ser_verbo(UttWS &u,UttI p,char *word_act,int i,etiquetas
 			if(tam>2) {
 				if( !strcmp("ad", &word_act[tam-2]) ||
 					!strcmp("ed", &word_act[tam-2]) ||
-					!strcmp("id", &word_act[tam-2])) 
+					!strcmp("id", &word_act[tam-2]))
 				{
 					// ###################
 					// # "ad" "ed" "id"" # // 1ª, 2ª o 3ª
 					// ###################
-				
+
 					if(buscar_infinitivo(u, p, word_act,  3, 0, 2)) return 1;
 				}
 			}
@@ -2156,7 +2152,7 @@ INT LangES_Categ::puede_ser_verbo(UttWS &u,UttI p,char *word_act,int i,etiquetas
 			if(tam>4) {
 				if( !strcmp("iste", &word_act[tam-4]) ||
 					!strcmp("iese", &word_act[tam-4]) ||
-					!strcmp("iere", &word_act[tam-4])) 
+					!strcmp("iere", &word_act[tam-4]))
 				{
 					// ##########################
 					// # "iste", "iese", "iere" # // 2ª o 3ª
@@ -2174,16 +2170,16 @@ INT LangES_Categ::puede_ser_verbo(UttWS &u,UttI p,char *word_act,int i,etiquetas
 					if(buscar_infinitivo(u, p, word_act,  1, 0, 4)) return 1;
 				}
 			}
-			
+
 			if(tam>3) {
 				if( !strcmp("ase", &word_act[tam-3]) ||
-					!strcmp("are", &word_act[tam-3])) 
+					!strcmp("are", &word_act[tam-3]))
 				{
 					// ###############
 					// # "ase" "are" # 	// 1ª
 					// ###############
-				
-						
+
+
 					if(buscar_infinitivo(u, p, word_act,  1, 0, 3)) return 1;
 				}
 			}
@@ -2223,7 +2219,7 @@ INT LangES_Categ::puede_ser_verbo(UttWS &u,UttI p,char *word_act,int i,etiquetas
 						return 1;
 					}
 				}
-				
+
 				// ************************************************
 				// * irregularidades gráficas "aplique" "aplicar" *
 				// ************************************************
@@ -2239,7 +2235,7 @@ INT LangES_Categ::puede_ser_verbo(UttWS &u,UttI p,char *word_act,int i,etiquetas
 					}
 				}
 
-		
+
 			}
 			break;
 
@@ -2247,12 +2243,12 @@ INT LangES_Categ::puede_ser_verbo(UttWS &u,UttI p,char *word_act,int i,etiquetas
 			if(tam>3) {
 				if( !strcmp("aré", &word_act[tam-3]) ||
 					!strcmp("eré", &word_act[tam-3]) ||
-					!strcmp("iré", &word_act[tam-3])) 
+					!strcmp("iré", &word_act[tam-3]))
 				{
 					// #######################
 					// # "aré", "eré", "iré" # // 1ª, 2ª o 3ª
 					// #######################
-				
+
 					if(buscar_infinitivo(u, p, word_act,  3, 0, 3)) return 1;
 				}
 			}
@@ -2263,7 +2259,7 @@ INT LangES_Categ::puede_ser_verbo(UttWS &u,UttI p,char *word_act,int i,etiquetas
 			if(tam>1)
 			{
 				if(buscar_infinitivo(u, p, word_act,  1, 0, 1)) return 1;
-								
+
 				// *********************************************
 				// * irregularidades gráficas "cargué" "carga" *
 				// *********************************************
@@ -2282,7 +2278,7 @@ INT LangES_Categ::puede_ser_verbo(UttWS &u,UttI p,char *word_act,int i,etiquetas
 					temporal[tam-2] = 'z';
 					if(buscar_infinitivo(u, p, temporal,  1, 0, 1)) return 1;
 				}
-		
+
 				// ************************************************
 				// * irregularidades gráficas "apliqué" "aplicar" *
 				// ************************************************
@@ -2310,23 +2306,23 @@ INT LangES_Categ::puede_ser_verbo(UttWS &u,UttI p,char *word_act,int i,etiquetas
 				if( !strcmp("ieren", &word_act[tam-5]) ||
 					!strcmp("iesen", &word_act[tam-5]) ||
 					!strcmp("ieran", &word_act[tam-5]) ||
-					!strcmp("ieron", &word_act[tam-5])) 
+					!strcmp("ieron", &word_act[tam-5]))
 				{
 					// ###################################
 					// # "ieren" "iesen" "ieran" "ieron" # // 2ª o 3ª
 					// ###################################
-				
+
 					if(buscar_infinitivo(u, p, word_act,  3, 1, 5)) return 1;
 				}
-				
+
 				if( !strcmp("arían", &word_act[tam-5]) ||
 					!strcmp("erían", &word_act[tam-5]) ||
-					!strcmp("irían", &word_act[tam-5])) 
+					!strcmp("irían", &word_act[tam-5]))
 				{
 					// ###########################
 					// # "arían" "erían" "irían" # // 1ª, 2ª o 3ª
 					// ###########################
-				
+
 					if(buscar_infinitivo(u, p, word_act,  3, 0, 5)) return 1;
 				}
 			}
@@ -2341,7 +2337,7 @@ INT LangES_Categ::puede_ser_verbo(UttWS &u,UttI p,char *word_act,int i,etiquetas
 					// ############################################
 					// # "aban" "aron" "arán" "aran" "asen" "aren"# // 1ª
 					// ############################################
-				
+
 					if(buscar_infinitivo(u, p, word_act,  1, 0, 4)) return 1;
 				}
 
@@ -2351,7 +2347,7 @@ INT LangES_Categ::puede_ser_verbo(UttWS &u,UttI p,char *word_act,int i,etiquetas
 					// #################
 					// # "erán" "irán" # // 2ª o 3ª
 					// #################
-				
+
 					if(buscar_infinitivo(u, p, word_act,  3, 1, 4)) return 1;
 				}
 			}
@@ -2361,7 +2357,7 @@ INT LangES_Categ::puede_ser_verbo(UttWS &u,UttI p,char *word_act,int i,etiquetas
 					// #########
 					// # "ían" # // 2ª o 3ª
 					// #########
-				
+
 					if(buscar_infinitivo(u, p, word_act,  3, 1, 3)) return 1;
 				}
 			}
@@ -2373,7 +2369,7 @@ INT LangES_Categ::puede_ser_verbo(UttWS &u,UttI p,char *word_act,int i,etiquetas
 					// #############
 					// # "an" "en" # // 1ª, 2ª o 3ª
 					// #############
-				
+
 					if(buscar_infinitivo(u, p, word_act,  3, 0, 2)) return 1;
 
 					// **********************************************
@@ -2383,7 +2379,7 @@ INT LangES_Categ::puede_ser_verbo(UttWS &u,UttI p,char *word_act,int i,etiquetas
 					if(!strcmp("guen", &word_act[tam-4])){
 						if(buscar_infinitivo(u, p, word_act,  1, 0, 3)) return 1;
 					}
-					
+
 					// *****************************************************
 					// * irregularidades gráficas "distingan" "distinguir" *
 					// *****************************************************
@@ -2393,7 +2389,7 @@ INT LangES_Categ::puede_ser_verbo(UttWS &u,UttI p,char *word_act,int i,etiquetas
 						temporal[tam-2] = 'u';
 						if(buscar_infinitivo(u, p, temporal,  3, 2, 1)) return 1;
 					}
-						
+
 					// ********************************************
 					// * irregularidades gráficas "gocen" "gozar" *
 					// ********************************************
@@ -2404,7 +2400,7 @@ INT LangES_Categ::puede_ser_verbo(UttWS &u,UttI p,char *word_act,int i,etiquetas
 						temporal[tam-3] = 'z';
 						if(buscar_infinitivo(u, p, temporal,  1, 0, 2)) return 1;
 					}
-										
+
 					// *************************************************
 					// * irregularidades gráficas "apliquen" "àplicar" *
 					// *************************************************
@@ -2486,7 +2482,7 @@ INT LangES_Categ::puede_ser_verbo(UttWS &u,UttI p,char *word_act,int i,etiquetas
 					// #######
 					// # 'ó' # // 1ª
 					// #######
-			
+
 				if(buscar_infinitivo(u, p, word_act,  1, 0, 1)) return 1;
 			}
 			break;
@@ -2497,68 +2493,68 @@ INT LangES_Categ::puede_ser_verbo(UttWS &u,UttI p,char *word_act,int i,etiquetas
 					!strcmp("iríamos", &word_act[tam-7]) ||
 					!strcmp("iéramos", &word_act[tam-7]) ||
 					!strcmp("iéremos", &word_act[tam-7]) ||
-					!strcmp("iésemos", &word_act[tam-7])) 
+					!strcmp("iésemos", &word_act[tam-7]))
 				{
 					// #####################################################
 					// # "eríamos" "iríamos" "iéramos" "iéremos" "iésemos" # // 2ª o 3ª
 					// #####################################################
-				
+
 					if(buscar_infinitivo(u, p, word_act,  3, 1, 7)) return 1; // metemos uno de sólo 2ª y otro de sólo 3ª
 				}
 
-				if( !strcmp("aríamos", &word_act[tam-7]) ) 
+				if( !strcmp("aríamos", &word_act[tam-7]) )
 				{
 					// #############
 					// # "aríamos" # // 1ª
 					// #############
-				
-					if(buscar_infinitivo(u, p, word_act,  1, 0, 7)) return 1; 
+
+					if(buscar_infinitivo(u, p, word_act,  1, 0, 7)) return 1;
 				}
 			}
 			if(tam>6) {
 				if( !strcmp("ierais", &word_act[tam-6]) ||
 					!strcmp("iereis", &word_act[tam-6]) ||
 					!strcmp("ieseis", &word_act[tam-6]) ||
-					!strcmp("isteis", &word_act[tam-6]) ) 
+					!strcmp("isteis", &word_act[tam-6]) )
 				{
 					// ########################################
 					// # "ierais" "iereis" "ieseis" "isteis"  # // 2ª o 3ª
 					// ########################################
-				
+
 					if(buscar_infinitivo(u, p, word_act,  3, 1, 6)) return 1; // metemos uno de sólo 2ª y otro de sólo 3ª
 				}
-				
+
 				if( !strcmp("asteis", &word_act[tam-6]) ||
 					!strcmp("aríais", &word_act[tam-6]) ||
 					!strcmp("ábamos", &word_act[tam-6]) ||
 					!strcmp("aremos", &word_act[tam-6]) ||
 					!strcmp("áramos", &word_act[tam-6]) ||
-					!strcmp("ásemos", &word_act[tam-6]) || 
-					!strcmp("áremos", &word_act[tam-6]) ) 
+					!strcmp("ásemos", &word_act[tam-6]) ||
+					!strcmp("áremos", &word_act[tam-6]) )
 				{
 					// ##################################################################
 					// # "asteis" "ábamos" "aríais" "aremos" "áramos" "ásemos" "áremos" # // 1ª
 					// ##################################################################
-				
-					if(buscar_infinitivo(u, p, word_act,  1, 0, 6)) return 1; 
+
+					if(buscar_infinitivo(u, p, word_act,  1, 0, 6)) return 1;
 				}
 				if( !strcmp("eríais", &word_act[tam-6]) ||
-					!strcmp("eremos", &word_act[tam-6]) ) 
+					!strcmp("eremos", &word_act[tam-6]) )
 				{
 					// #####################
 					// # "eríais" "eremos" # // 2ª
 					// #####################
-				
-					if(buscar_infinitivo(u, p, word_act,  2, 1, 6)) return 1; 
+
+					if(buscar_infinitivo(u, p, word_act,  2, 1, 6)) return 1;
 				}
 				if( !strcmp("iríais", &word_act[tam-6]) ||
-					!strcmp("iremos", &word_act[tam-6]) ) 
+					!strcmp("iremos", &word_act[tam-6]) )
 				{
 					// #####################
 					// # "iríais" "iremos" # // 3ª
 					// #####################
-				
-					if(buscar_infinitivo(u, p, word_act,  3, 2, 6)) return 1; 
+
+					if(buscar_infinitivo(u, p, word_act,  3, 2, 6)) return 1;
 				}
 			}
 			if(tam>5) {
@@ -2567,52 +2563,52 @@ INT LangES_Categ::puede_ser_verbo(UttWS &u,UttI p,char *word_act,int i,etiquetas
 					!strcmp("areis", &word_act[tam-5]) ||
 					!strcmp("arais", &word_act[tam-5]) ||
 					!strcmp("aseis", &word_act[tam-5]) ||
-					!strcmp("aréis", &word_act[tam-5]) ) 
+					!strcmp("aréis", &word_act[tam-5]) )
 				{
 					// ###################################################
 					// # "abais" "arías" "areis" "arais" "aseis" "aréis" # // 1ª
 					// ###################################################
-				
-					if(buscar_infinitivo(u, p, word_act,  1, 0, 5)) return 1; 
+
+					if(buscar_infinitivo(u, p, word_act,  1, 0, 5)) return 1;
 				}
 				if( !strcmp("ieras", &word_act[tam-5]) ||
 					!strcmp("ieres", &word_act[tam-5]) ||
 					!strcmp("ieses", &word_act[tam-5]) ||
-					!strcmp("íamos", &word_act[tam-5]) ) 
+					!strcmp("íamos", &word_act[tam-5]) )
 				{
 					// ####################################
 					// # "ieras" "ieres" "ieses" "íamos"  # // 2ª o 3ª
 					// ####################################
-				
-					if(buscar_infinitivo(u, p, word_act,  3, 1, 5)) return 1; 
+
+					if(buscar_infinitivo(u, p, word_act,  3, 1, 5)) return 1;
 				}
 				if( !strcmp("erías", &word_act[tam-5]) ||
-					!strcmp("eréis", &word_act[tam-5]) ) 
+					!strcmp("eréis", &word_act[tam-5]) )
 				{
 					// ###################
 					// # "erías" "eréis" # // 2ª
 					// ###################
-				
-					if(buscar_infinitivo(u, p, word_act,  2, 1, 5)) return 1; 
+
+					if(buscar_infinitivo(u, p, word_act,  2, 1, 5)) return 1;
 				}
 				if( !strcmp("irías", &word_act[tam-5]) ||
-					!strcmp("iréis", &word_act[tam-5]) ) 
+					!strcmp("iréis", &word_act[tam-5]) )
 				{
 					// ###################
 					// # "irías" "iréis" # // 3ª
 					// ###################
-				
-					if(buscar_infinitivo(u, p, word_act,  3, 2, 5)) return 1; 
+
+					if(buscar_infinitivo(u, p, word_act,  3, 2, 5)) return 1;
 				}
 			}
-			
+
 			if(tam>4) {
-				if( !strcmp("amos", &word_act[tam-4]) ) 
+				if( !strcmp("amos", &word_act[tam-4]) )
 				{
 					// ##########
 					// # "amos" # // 1ª, 2ª o 3ª
 					// ##########
-				
+
 					if(buscar_infinitivo(u, p, word_act,  3, 0, 4)) return 1;
 
 					// ***********************************************
@@ -2636,44 +2632,44 @@ INT LangES_Categ::puede_ser_verbo(UttWS &u,UttI p,char *word_act,int i,etiquetas
 					}
 
 				}
-				if( !strcmp("imos", &word_act[tam-4]) ) 
+				if( !strcmp("imos", &word_act[tam-4]) )
 				{
 					// ###########
 					// # "imos"  # // 2ª o 3ª
 					// ###########
-				
-					if(buscar_infinitivo(u, p, word_act,  3, 1, 4)) return 1; 
+
+					if(buscar_infinitivo(u, p, word_act,  3, 1, 4)) return 1;
 				}
 				if( !strcmp("abas", &word_act[tam-4]) ||
 					!strcmp("arás", &word_act[tam-4]) ||
 					!strcmp("ases", &word_act[tam-4]) ||
 					!strcmp("ares", &word_act[tam-4]) ||
 					!strcmp("aras", &word_act[tam-4]) ||
-					!strcmp("emos", &word_act[tam-4]) ) 
+					!strcmp("emos", &word_act[tam-4]) )
 				{
 					// #############################################
 					// # "abas" "arás" "ases" "ares" "aras" "emos" # // 1ª
 					// #############################################
-				
-					if(buscar_infinitivo(u, p, word_act,  1, 0, 4)) return 1; 
+
+					if(buscar_infinitivo(u, p, word_act,  1, 0, 4)) return 1;
 				}
 				if( !strcmp("erás", &word_act[tam-4]) ||
-					!strcmp("emos", &word_act[tam-4]) ) 
+					!strcmp("emos", &word_act[tam-4]) )
 				{
 					// #################
 					// # "erás" "emos" # // 2ª
 					// #################
-				
+
 					if(buscar_infinitivo(u, p, word_act,  2, 1, 4)) return 1;
 
 					// ************************************************
 					// * irregularidades gráficas "carguemos" "carga" *
 					// ************************************************
-	
+
 					if((tam>5) && !strcmp("guemos", &word_act[tam-6])){
 						if(buscar_infinitivo(u, p, word_act,  1, 0, 5)) return 1;
 					}
-					
+
 					// **********************************************
 					// * irregularidades gráficas "gocemos" "gozar" *
 					// **********************************************
@@ -2684,7 +2680,7 @@ INT LangES_Categ::puede_ser_verbo(UttWS &u,UttI p,char *word_act,int i,etiquetas
 						temporal[tam-5] = 'z';
 						if(buscar_infinitivo(u, p, temporal,  1, 0, 4)) return 1;
 					}
-					
+
 					// ***************************************************
 					// * irregularidades gráficas "apliquemos" "àplicar" *
 					// ***************************************************
@@ -2696,23 +2692,23 @@ INT LangES_Categ::puede_ser_verbo(UttWS &u,UttI p,char *word_act,int i,etiquetas
 					}
 				}
 				if( !strcmp("irás", &word_act[tam-4]) ||
-					!strcmp("íais", &word_act[tam-4]) ) 
+					!strcmp("íais", &word_act[tam-4]) )
 				{
 					// #################
 					// # "irás" "íais" # // 3ª
 					// #################
-				
-					if(buscar_infinitivo(u, p, word_act,  3, 2, 4)) return 1; 
+
+					if(buscar_infinitivo(u, p, word_act,  3, 2, 4)) return 1;
 				}
 			}
 			if(tam>3) {
-				if( !strcmp("áis", &word_act[tam-3]) ) 
+				if( !strcmp("áis", &word_act[tam-3]) )
 				{
 					// #########
 					// # "áis" # // 1ª, 2ª o 3ª
 					// #########
-				
-					if(buscar_infinitivo(u, p, word_act,  3, 0, 3)) return 1; 
+
+					if(buscar_infinitivo(u, p, word_act,  3, 0, 3)) return 1;
 
 					// **********************************************
 					// * irregularidades gráficas "finge" "finjáis" *
@@ -2733,12 +2729,12 @@ INT LangES_Categ::puede_ser_verbo(UttWS &u,UttI p,char *word_act,int i,etiquetas
 						if(buscar_infinitivo(u, p, temporal,  3, 2, 2)) return 1;
 					}
 				}
-				if( !strcmp("éis", &word_act[tam-3]) ) 
+				if( !strcmp("éis", &word_act[tam-3]) )
 				{
 					// #########
-					// # "éis" # // 1ª o 2ª 
+					// # "éis" # // 1ª o 2ª
 					// #########
-				
+
 					if(buscar_infinitivo(u, p, word_act,  2, 0, 3)) return 1;
 
 					// ***********************************************
@@ -2759,7 +2755,7 @@ INT LangES_Categ::puede_ser_verbo(UttWS &u,UttI p,char *word_act,int i,etiquetas
 						temporal[tam-4] = 'z';
 						if(buscar_infinitivo(u, p, temporal,  1, 0, 3)) return 1;
 					}
-					
+
 					// *********************************************
 					// * irregularidades gráficas "gocéis" "gozar" *
 					// *********************************************
@@ -2770,16 +2766,16 @@ INT LangES_Categ::puede_ser_verbo(UttWS &u,UttI p,char *word_act,int i,etiquetas
 						if(buscar_infinitivo(u, p, temporal,  1, 0, 4)) return 1;
 					}
 				}
-				if( !strcmp("ías", &word_act[tam-3]) ) 
+				if( !strcmp("ías", &word_act[tam-3]) )
 				{
 					// #########
 					// # "ías" # //  2ª o 3ª
 					// #########
-				
-					if(buscar_infinitivo(u, p, word_act,  3, 1, 3)) return 1; 
+
+					if(buscar_infinitivo(u, p, word_act,  3, 1, 3)) return 1;
 				}
 			}
-			
+
 			if(tam>2) {
 				if( !strcmp("as", &word_act[tam-2]) ||
 					!strcmp("es", &word_act[tam-2]) )
@@ -2787,14 +2783,14 @@ INT LangES_Categ::puede_ser_verbo(UttWS &u,UttI p,char *word_act,int i,etiquetas
 					// #############
 					// # "as" "es" # // 1ª, 2ª o 3ª
 					// #############
-				
+
 					if(buscar_infinitivo(u, p, word_act,  3, 0, 2))
 					{
 						//u.cell(p).setPOS(POS_ES_VERB_SIMP_DEBIL);
 						pos[i].pos1=10001;//POS_ES_VERB_SIMP_DEBIL
 						return 1;
 					}
-					
+
 					// **********************************************
 					// * irregularidades gráficas "fingir" "finjas" *
 					// **********************************************
@@ -2809,7 +2805,7 @@ INT LangES_Categ::puede_ser_verbo(UttWS &u,UttI p,char *word_act,int i,etiquetas
 							return 1;
 						}
 					}
-				
+
 					// *****************************************************
 					// * irregularidades gráficas "distingas" "distinguir" *
 					// *****************************************************
@@ -2817,14 +2813,14 @@ INT LangES_Categ::puede_ser_verbo(UttWS &u,UttI p,char *word_act,int i,etiquetas
 					if(!strcmp("gas", &word_act[tam-3])){
 						strcpy(temporal, word_act);
 						temporal[tam-2] = 'u';
-						if(buscar_infinitivo(u, p, temporal,  3, 2, 1)) 
+						if(buscar_infinitivo(u, p, temporal,  3, 2, 1))
 						{
 							//u.cell(p).setPOS(POS_ES_VERB_SIMP_DEBIL);
 							pos[i].pos1=10001;//POS_ES_VERB_SIMP_DEBIL
 							return 1;
 						}
 					}
-					
+
 					// ********************************************
 					// * irregularidades gráficas "goces" "gozar" *
 					// ********************************************
@@ -2835,7 +2831,7 @@ INT LangES_Categ::puede_ser_verbo(UttWS &u,UttI p,char *word_act,int i,etiquetas
 						temporal[tam-3] = 'z';
 						if(buscar_infinitivo(u, p, temporal,  1, 0, 2)) return 1;
 					}
-					
+
 					if(buscar_infinitivo(u, p, word_act,  3, 0, 2))
 					{
 						//u.cell(p).setPOS(POS_ES_VERB_SIMP_DEBIL);
@@ -2849,7 +2845,7 @@ INT LangES_Categ::puede_ser_verbo(UttWS &u,UttI p,char *word_act,int i,etiquetas
 					// **********************************************
 
 					if(!strcmp("gues", &word_act[tam-4])){
-						if(buscar_infinitivo(u, p, word_act,  1, 0, 3)) 
+						if(buscar_infinitivo(u, p, word_act,  1, 0, 3))
 						{
 							//u.cell(p).setPOS(POS_ES_VERB_SIMP_DEBIL);
 							pos[i].pos1=10001;//POS_ES_VERB_SIMP_DEBIL
@@ -2857,7 +2853,7 @@ INT LangES_Categ::puede_ser_verbo(UttWS &u,UttI p,char *word_act,int i,etiquetas
 						}
 
 					}
-										
+
 					// *************************************************
 					// * irregularidades gráficas "apliques" "àplicar" *
 					// *************************************************
@@ -2873,13 +2869,13 @@ INT LangES_Categ::puede_ser_verbo(UttWS &u,UttI p,char *word_act,int i,etiquetas
 						}
 					}
 				}
-				if( !strcmp("ís", &word_act[tam-2]) ) 
+				if( !strcmp("ís", &word_act[tam-2]) )
 				{
 					// #######
-					// # "í" # // 3ª 
+					// # "í" # // 3ª
 					// #######
-				
-					if(buscar_infinitivo(u, p, word_act,  3, 2, 2)) return 1; 
+
+					if(buscar_infinitivo(u, p, word_act,  3, 2, 2)) return 1;
 				}
 			}
 			break;
@@ -2894,7 +2890,7 @@ INT LangES_Categ::buscar_infinitivo(UttWS &u,UttI p, CHAR *word_act, int fin, in
 {
 	INT tam = 0;
 	CHAR aei[3][3] = {"ar", "er", "ir"};
-	INT i, temp;
+	INT i;
 	CHAR raiz[MAX_TAM_WORD]="\0";
 
 	HDicRef href;
@@ -2903,22 +2899,20 @@ INT LangES_Categ::buscar_infinitivo(UttWS &u,UttI p, CHAR *word_act, int fin, in
 
 	strcpy(raiz, word_act);
 
-	for(i=inicio; i<fin; i++) 
+	for(i=inicio; i<fin; i++)
 	{
 	strcpy(&raiz[tam-longitud], aei[i]); // Sobreescribimos la palabra.   comió -> comer
 
 	href = u.getHDicDB()->search(raiz); // Buscamos en el diccionario el verbo
 
-	temp = u.getHDicDB()->query(href, HDIC_QUERY_ES_VERB);
-
-		switch(u.getHDicDB()->query(href, HDIC_QUERY_ES_VERB)) 
+		switch(u.getHDicDB()->query(href, HDIC_QUERY_ES_VERB))
 		{
 		case HDIC_QUERY_ES_VERB_IR1C:	// 1ª conjugación
 		case HDIC_QUERY_ES_VERB_IR2C:	// 2ª conjugación
 		case HDIC_QUERY_ES_VERB_IR3C:	// 3ª conjugación
 		case HDIC_QUERY_ES_VERB_IICC:	// 3ª conjugación
 			u.cell(p).setPOS(POS_ES_VERB_SIMP);
-			return 1;		
+			return 1;
 		default:
 			break;
 		}
@@ -2954,7 +2948,7 @@ INT LangES_Categ::es_xxeer(UttWS &u,UttI p)
 			u.cell(p).setPOS(POS_ES_VERB_IICC);
 			return 1;
 		}
-		if (tam > 4) 
+		if (tam > 4)
 		{
 			strcpy(raiz, word_act);
 
@@ -2965,7 +2959,7 @@ INT LangES_Categ::es_xxeer(UttWS &u,UttI p)
 				u.cell(p).setPOS(POS_ES_VERB_IICC);
 				return 1;
 			}
-			if (tam > 5) 
+			if (tam > 5)
 			{
 				strcpy(raiz, word_act);
 
@@ -2978,7 +2972,7 @@ INT LangES_Categ::es_xxeer(UttWS &u,UttI p)
 					u.cell(p).setPOS(POS_ES_VERB_IICC);
 					return 1;
 				}
-				if (tam > 6) 
+				if (tam > 6)
 				{
 					strcpy(raiz, word_act);
 
@@ -2986,12 +2980,12 @@ INT LangES_Categ::es_xxeer(UttWS &u,UttI p)
 
 					// es el verbo proveer, decaer o recaer
 					if(!strcmp(raiz, "provey") || !strcmp(raiz, "decaig") ||
-						!strcmp(raiz, "recaig")) 
+						!strcmp(raiz, "recaig"))
 					{
 						u.cell(p).setPOS(POS_ES_VERB_IICC);
 						return 1;
 					}
-					if (tam > 7) 
+					if (tam > 7)
 					{
 						strcpy(raiz, word_act);
 
@@ -3002,14 +2996,14 @@ INT LangES_Categ::es_xxeer(UttWS &u,UttI p)
 							u.cell(p).setPOS(POS_ES_VERB_IICC);
 							return 1;
 						}
-						if (tam > 8) 
+						if (tam > 8)
 						{
 							strcpy(raiz, word_act);
 
 							raiz[8]='\0'; // vamos a mirar el comienzo de la palabra
 
 							// es el verbo sobreseer o desposeer
-							if(!strcmp(raiz, "desposey") || !strcmp(raiz, "sobresey")) 
+							if(!strcmp(raiz, "desposey") || !strcmp(raiz, "sobresey"))
 							{
 								u.cell(p).setPOS(POS_ES_VERB_IICC);
 								return 1;
@@ -3065,7 +3059,7 @@ INT LangES_Categ::es_nli(UttWS &u,UttI p)
 			u.cell(p).setPOS(POS_ES_VERB_IICC); // puede ser 3ª
 			return 1;
 		}
-		if (tam > 5) 
+		if (tam > 5)
 		{
 			strcpy(raiz, word_act);
 
@@ -3079,7 +3073,7 @@ INT LangES_Categ::es_nli(UttWS &u,UttI p)
 				u.cell(p).setPOS(POS_ES_VERB_IICC);
 				return 1;
 			}
-			if (tam > 6) 
+			if (tam > 6)
 			{
 				strcpy(raiz, word_act);
 
@@ -3087,12 +3081,12 @@ INT LangES_Categ::es_nli(UttWS &u,UttI p)
 
 				// es el verbo desteñir, estreñir o engullir
 				if(!strcmp(raiz, "destiñ") || !strcmp(raiz, "estriñ") ||
-					!strcmp(raiz, "engull")) 
+					!strcmp(raiz, "engull"))
 				{
 					u.cell(p).setPOS(POS_ES_VERB_IICC);
 					return 1;
 				}
-				if (tam > 8) 
+				if (tam > 8)
 				{
 					strcpy(raiz, word_act);
 
@@ -3100,7 +3094,7 @@ INT LangES_Categ::es_nli(UttWS &u,UttI p)
 
 					// es el verbo constreñir, rebullir, escabullir o zambullir
 					if(!strcmp(raiz, "constriñ") || !strcmp(raiz, "rebulle")||
-						!strcmp(raiz, "escabull") || !strcmp(raiz, "zambulle")) 
+						!strcmp(raiz, "escabull") || !strcmp(raiz, "zambulle"))
 					{
 						u.cell(p).setPOS(POS_ES_VERB_IICC);
 						return 1;
@@ -3137,7 +3131,7 @@ INT LangES_Categ::es_poner(UttWS &u,UttI p, CHAR *word_act)
 			u.cell(p).setPOS(POS_ES_VERB_IICC);
 			return 1;
 		}
-		if (tam > 4) 
+		if (tam > 4)
 		{
 			strcpy(raiz, word_act);
 
@@ -3148,7 +3142,7 @@ INT LangES_Categ::es_poner(UttWS &u,UttI p, CHAR *word_act)
 				u.cell(p).setPOS(POS_ES_VERB_IICC);
 				return 1;
 			}
-			if (tam > 5) 
+			if (tam > 5)
 			{
 				strcpy(raiz, word_act);
 
@@ -3260,12 +3254,12 @@ INT LangES_Categ::es_hacer(UttWS &u,UttI p, CHAR *word_act)
 		raiz[4]='\0'; // vamos a mirar el comienzo de la palabra
 
 		if(!strcmp(raiz, "haré") || !strcmp(raiz, "hará") ||
-			!strcmp(raiz, "harí") || !strcmp(raiz, "hare")) 
+			!strcmp(raiz, "harí") || !strcmp(raiz, "hare"))
 		{
 			u.cell(p).setPOS(POS_ES_VERB_IICC);
 			return 1;
 		}
-		if (tam == 7) 
+		if (tam == 7)
 		{
 			if(!strcmp("haremos", word_act) )
 			{
@@ -3301,14 +3295,14 @@ INT LangES_Categ::es_xxhacer(UttWS &u,UttI p)
 
 		if(es_hacer( u, p, &raiz[2]))
 		{
-			return 1; 
+			return 1;
 		}
 
 		// 	deshacer
 
 		if(es_hacer( u, p, &raiz[3]))
 		{
-			return 1; 
+			return 1;
 		}
 
 		// 	satisfacer
@@ -3340,18 +3334,18 @@ INT LangES_Categ::es_valer(UttWS &u,UttI p, CHAR *word_act)
 
 	strcpy(raiz, word_act);
 
-	if (tam > 4) 
+	if (tam > 4)
 	{
 		strcpy(raiz, word_act);
 
 		raiz[4]='\0'; // vamos a mirar el comienzo de la palabra
 
-		if(!strcmp(raiz, "valg")) 
+		if(!strcmp(raiz, "valg"))
 		{
 			u.cell(p).setPOS(POS_ES_VERB_IICC);
 			return 1;
 		}
-		if (tam >5) 
+		if (tam >5)
 		{
 			strcpy(raiz, word_act);
 
@@ -3392,7 +3386,7 @@ INT LangES_Categ::es_xxvaler(UttWS &u,UttI p)
 
 		if(es_valer( u, p, &raiz[4]))
 		{
-			return 1; 
+			return 1;
 		}
 	}
 	return 0;
@@ -3423,7 +3417,7 @@ INT LangES_Categ::es_tener(UttWS &u,UttI p, CHAR *word_act)
 			u.cell(p).setPOS(POS_ES_VERB_IICC);
 			return 1;
 		}
-		if (tam > 4) 
+		if (tam > 4)
 		{
 			strcpy(raiz, word_act);
 
@@ -3434,7 +3428,7 @@ INT LangES_Categ::es_tener(UttWS &u,UttI p, CHAR *word_act)
 				u.cell(p).setPOS(POS_ES_VERB_IICC);
 				return 1;
 			}
-			if (tam > 5) 
+			if (tam > 5)
 			{
 				strcpy(raiz, word_act);
 
@@ -3530,7 +3524,7 @@ INT LangES_Categ::es_traer(UttWS &u,UttI p, CHAR *word_act)
 			u.cell(p).setPOS(POS_ES_VERB_IICC);
 			return 1;
 		}
-		if (tam > 5) 
+		if (tam > 5)
 		{
 			strcpy(raiz, word_act);
 
@@ -3680,7 +3674,7 @@ INT LangES_Categ::es_salir(UttWS &u,UttI p, CHAR *word_act)
 	HDicRef hDicRef;
 	tam = strlen(word_act);
 
-	if (tam > 5) 
+	if (tam > 5)
 	{
 		strcpy(raiz, word_act);
 
@@ -3741,7 +3735,7 @@ INT LangES_Categ::es_venir(UttWS &u,UttI p, CHAR *word_act)
 
 	strcpy(raiz, word_act);
 
-	if (tam > 5) 
+	if (tam > 5)
 	{
 		strcpy(raiz, word_act);
 
@@ -3862,7 +3856,7 @@ INT LangES_Categ::es_xxducir(UttWS &u,UttI p)
 			u.cell(p).setPOS(POS_ES_VERB_IICC);
 			return 1;
 		}
-		
+
 		strcpy(raiz, word_act);
 
 		raiz[6]='\0';
@@ -3903,7 +3897,6 @@ INT LangES_Categ::es_no_personal(UttWS &u,UttI p)
 	CHAR letra_final = 0;
 	INT tam = 0;
 	CHAR word_act[MAX_TAM_WORD]="\0";
-	CHAR raiz[MAX_TAM_WORD]="\0";
 	strcpy(word_act,u.cell(p).getWord());
 
 	tam = strlen(word_act);
@@ -3938,7 +3931,7 @@ INT LangES_Categ::es_no_personal(UttWS &u,UttI p)
 			if (!strcmp("ado", &word_act[tam-3]) ||
 				!strcmp("ido", &word_act[tam-3]))
 				{
-				
+
 					if(buscar_infinitivo(u, p, word_act,  3, 0, 3))
 					{
 						u.cell(p).setPOS(POS_ES_VERB_PPIO);
@@ -3960,19 +3953,19 @@ int quitar_acentos(CHAR *word_act)
 	{
 		switch (word_act[i])
 		{
-		case 'á':
+		case CS_atilde:
 			word_act[i] = 'a';
 			break;
-		case 'é':
+		case CS_etilde:
 			word_act[i] = 'e';
 			break;
-		case 'í':
+		case CS_itilde:
 			word_act[i] = 'i';
 			break;
-		case 'ó':
+		case CS_otilde:
 			word_act[i] = 'o';
 			break;
-		case 'ú':
+		case CS_utilde:
 			word_act[i] = 'u';
 			break;
 		}
@@ -3980,7 +3973,7 @@ int quitar_acentos(CHAR *word_act)
 	return 1;
 }
 
-		
+
 // *********************************************************************
 // * Buscamos patrones en el inicio de la palabra, TODO lo que empiece *
 // *                   (las excepciones al diccionario)                *
@@ -4014,14 +4007,14 @@ INT LangES_Categ::es_xxmente(UttWS &u,UttI p)
 }
 
 int mirar_etiq (int etiqueta, int i, etiquetas *pos){
-	
+
 	int etiq_encontrada=0;
-	
+
 	if(pos[i].pos1==etiqueta || pos[i].pos2==etiqueta || pos[i].pos3==etiqueta || pos[i].pos4==etiqueta || pos[i].pos5==etiqueta ){
 		etiq_encontrada=1;
 	}
 	else{
 		etiq_encontrada=0;
-	}	
+	}
 	return etiq_encontrada;
 }

@@ -148,7 +148,7 @@ int genharmonics(double *trama,unsigned int N12,unsigned int N23,double fs,doubl
 	// ademas, si wins=1 enventana lo que hubiera antes, siendo ideal para cuando me dan un frame con ruido
 	double fact,w,w0,cosdw0,sindw0,cosdw,sindw,cosw,sinw,aux1,aux2;
 	unsigned int k,n,N13=N12+N23; //N12=n2-n1,N23=n3-n2,N13=n3-n1;
-	if ((K==0)||(N13==0)) return 0; else if ((N12<0)||(N23<0)) return -1;
+	if ((K==0)||(N13==0)) return 0;
 	w0=2*PI*f0/fs; cosdw0=cos(w0); sindw0=sin(w0); cosdw=cosdw0; sindw=sindw0;
 	if (wins==1) {
 		w=-w0*(double)N12+alfa; cosw=cos(w); sinw=sin(w); fact=1.0/sqrt(DCWINS*DCWINS+0.5);
@@ -271,7 +271,10 @@ int cc2waveform(double *x,unsigned int Lx,double fs,unsigned int Lframe,unsigned
 	// inicializo la señal a ceros
 	for (k=0;k<Lx;k++) x[k]=0.0;
 	// miro el pitch minimo encontrado para determinar Kmax y reservar espacio pa la matriz de voiced
-	for (f0min=DBL_MAX,k=0;k<Nframes;k++) if (f0s[k][0]>0.0 && f0s[k][0]<f0min) f0min=f0s[k][0]; f0min=exp(f0min); if (f0min<MINGENF0) f0min=MINGENF0;
+	for (f0min=DBL_MAX,k=0;k<Nframes;k++)
+        if (f0s[k][0]>0.0 && f0s[k][0]<f0min) f0min=f0s[k][0];
+    f0min=exp(f0min);
+    if (f0min<MINGENF0) f0min=MINGENF0;
 	// calculo los valores maximo y minimo de c0, con los que mapearé la maximum voicing frequency si es caso
 	if (fvs==NULL) for (k=0,c0min=DBL_MAX,c0max=-DBL_MAX;k<Nframes;k++) { cc=CC[k]; if (f0s[k][0]>0.0 && cc[0]>c0max) c0max=cc[0]; if (cc[0]<c0min) c0min=cc[0]; }
 	// saco el maximo numero esperable de armonicos para hacer reserva de memoria

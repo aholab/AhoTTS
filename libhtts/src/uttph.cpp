@@ -281,8 +281,12 @@ CHAR *UttCellPh::__finput( CHAR *s )
 			set_PthN((INT)(l.length()/2));
 			for (INT i=0; i<get_PthN(); i++) {
 				DOUBLE d;
-				if (str2d(l.item(i*2),&d)) return NULL; set_PthX(i,d);
-				if (str2d(l.item(i*2+1),&d)) return NULL; set_Pth(i,d);
+				if (str2d(l.item(i*2),&d))
+                    return NULL;
+                set_PthX(i,d);
+				if (str2d(l.item(i*2+1),&d))
+                    return NULL;
+                set_Pth(i,d);
 			}
 		}
 	}

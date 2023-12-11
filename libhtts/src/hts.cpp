@@ -796,7 +796,7 @@ short int * HTS_U2W::xinput_labels(String labels, int  *num_muestras){
 		HTS_ENGINE_INITIALIZED = TRUE;
 	}
 
-	BOOL setdur=TRUE;//TRUE;
+	// BOOL setdur=TRUE;//TRUE;
     //convertir de pho a formato de label adecuado para HTS-engine
 //	fprintf(stderr,"%s\n", (const char *)labels_string);
 
@@ -873,6 +873,7 @@ short int * HTS_U2W::xinput_labels(String labels, int  *num_muestras){
 /**********************************************************/
 // SINTETIZA UN FONEMA
 BOOL HTS_U2W::doNext(BOOL flush) {
+    (void) flush;
     assert(!wav_nready);// solo llegamos aqui cuando no quedan mas muestras listas.
     if (!ut) return FALSE;
 

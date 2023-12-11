@@ -251,7 +251,7 @@ VOID clargs2props( int argc, char *argv[], KVStrList &props,
 				if (((const char *)fmt.itemval(p))[0]=='b') // bool es un tanto especial
           props.add(k,props.tob(k,val));
 				else {
-					cdie_beep(*val==0,"Error: incomplete command line arg (-%s=???)",(const char *)k);
+					cdie_beep(*val==0,"Error: incomplete command line arg (-%s=\?\?\?)",(const char *)k);
 					switch (((const char *)fmt.itemval(p))[0]) {
 					case 'i': props.add(k,props.toi(k,val)); break;
 					case 'l': props.add(k,props.tol(k,val)); break;
@@ -319,7 +319,7 @@ VOID clargs2props( int argc, char *argv[], KVStrList &props,
 			std::cerr << "   -CfgFile=<fname>" << std::endl;
 			std::cerr << "   -ArgFile=<fname>" << std::endl;
 
-			if (any) std::cerr << "   -???=???"<< std::endl;
+			if (any) std::cerr << "   -\?\?\?=\?\?\?"<< std::endl;
 			std::cerr << "----" << std::endl;
 			if (opts.bval("HelpPause",FALSE)&&isatty(2)) {
 				fprintf(stderr,  "-- Press ENTER key to continue ---");

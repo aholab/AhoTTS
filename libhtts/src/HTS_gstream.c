@@ -76,8 +76,14 @@ HTS_Boolean HTS_GStreamSet_create(HTS_GStreamSet * gss, HTS_PStreamSet * pss, in
    int msd_frame;
    // DERRO: quito el vocoder porque voy a usar el mío propio
    //HTS_Vocoder v;
-   int nlpf = 0;
-   double *lpf = NULL;
+   // int nlpf = 0;
+   // double *lpf = NULL;
+   (void) stage;
+   (void) beta;
+   (void) use_log_gain;
+   (void) stop;
+   (void) volume;
+   (void) audio;
 
    /* check */
    if (gss->gstream || gss->gspeech) {

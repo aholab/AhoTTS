@@ -132,11 +132,12 @@ else
 										u.cell(p).subPOS(POS_EU_ADI_TRN);
 							}
 						}
-						else
+						else {
 									if (u.cell(p).queryPOS(POS_EU_ADI_TRN))
 										u.cell(p).subPOS(POS_EU_ADI_TRN);
 									if (u.cell(p).queryPOS(POS_EU_ADI_LGN))
 										u.cell(p).subPOS(POS_EU_ADI_LGN);
+                        }
 
 
 	}
@@ -145,26 +146,28 @@ else
 //**********************************************************************
 
 VOID LangEU_Categ::detior(UttWS &u, UttI p) {
-int primero=0;
-UttI p_word_prev=NULL;
-if (p!=u.wordFirst())
-	p_word_prev=u.wordPrev(p);
-else
-	primero=1;
-	if ((u.cell(p).queryPOS(POS_EU_DET)) &&
-		 (u.cell(p).queryPOS(POS_EU_IOR)) ){
+    int primero=0;
+    UttI p_word_prev=NULL;
+    if (p!=u.wordFirst())
+        p_word_prev=u.wordPrev(p);
+    else {
+        primero=1;
+    }
+    if ((u.cell(p).queryPOS(POS_EU_DET)) &&
+            (u.cell(p).queryPOS(POS_EU_IOR)) ){
 
-						if (primero==0) {
-							if ( (u.cell(p_word_prev).queryPOS(POS_EU_IZE)) ||
-								(u.cell(p_word_prev).queryPOS(POS_EU_ADJ)) ||
-							 (u.cell(p_word_prev).queryPOS(POS_EU_NONE)) ) {
-									u.cell(p).subPOS(POS_EU_IOR);	//quitar ior pq es det
-							} else
-									u.cell(p).subPOS(POS_EU_DET);	//quitar det pq es ior
-						}
-						else
-							u.cell(p).subPOS(POS_EU_DET);	//quitar det pq es ior
-					}
+        if (primero==0) {
+            if ( (u.cell(p_word_prev).queryPOS(POS_EU_IZE)) ||
+                    (u.cell(p_word_prev).queryPOS(POS_EU_ADJ)) ||
+                    (u.cell(p_word_prev).queryPOS(POS_EU_NONE)) ) {
+                u.cell(p).subPOS(POS_EU_IOR);	//quitar ior pq es det
+            } else
+                u.cell(p).subPOS(POS_EU_DET);	//quitar det pq es ior
+        }
+        else {
+            u.cell(p).subPOS(POS_EU_DET);	//quitar det pq es ior
+        }
+    }
 }
 
 //**********************************************************************
@@ -223,11 +226,11 @@ else
 					}
 				}			
 				if ((u.cell(p).queryPOS(POS_EU_ADI_TRN)) && (u.cell(p).queryPOS(POS_EU_ADI_LGN)))
-					if(u.wordNext(p)!=NULL)
-						if (u.cell(u.wordNext(p)).queryPOS(POS_EU_ADI_JOK))
+					if(u.wordNext(p)!=NULL) {
+						if (u.cell(u.wordNext(p)).queryPOS(POS_EU_ADI_JOK)){
 							u.cell(p).subPOS(POS_EU_ADI_TRN);
-						else u.cell(p).subPOS(POS_EU_ADI_LGN);
-					else u.cell(p).subPOS(POS_EU_ADI_LGN);
+                        } else u.cell(p).subPOS(POS_EU_ADI_LGN);
+                    } else u.cell(p).subPOS(POS_EU_ADI_LGN);
 			}
 			else u.cell(p).subPOS(POS_EU_ADI_LGN);
 		}
@@ -241,40 +244,41 @@ else
 //**********************************************************************
 
 VOID LangEU_Categ::jntazk(UttWS &u, UttI p,int numWord) {
-		if ((u.cell(p).queryPOS(POS_EU_LOT_AZK)) &&
-		 (u.cell(p).queryPOS(POS_EU_LOT_JNT)) ){
+    if ((u.cell(p).queryPOS(POS_EU_LOT_AZK)) &&
+            (u.cell(p).queryPOS(POS_EU_LOT_JNT)) ){
 //			if (p==u.wordLast()){	//esta al final
 /* EVA: cambiado el rango que usaba inmass por URANGE_SENTENCE que es el 
-que deberia haber usado */
-			if (u.wordIsLast(p,URANGE_SENTENCE)){	//esta al final de frase, no utte
-				u.cell(p).subPOS(POS_EU_LOT_JNT);  //quitar LOT_JNT,es LOT_AZK
-				if (u.cell(p).queryPOS(POS_EU_PAUSE_AURRE))
-					u.cell(p).subPOS(POS_EU_PAUSE_AURRE);
-				if (u.cell(p).queryPOS(POS_EU_PAUSE_ATZE))
-					u.cell(p).subPOS(POS_EU_PAUSE_ATZE);
-			}
+   que deberia haber usado */
+        if (u.wordIsLast(p,URANGE_SENTENCE)){	//esta al final de frase, no utte
+            u.cell(p).subPOS(POS_EU_LOT_JNT);  //quitar LOT_JNT,es LOT_AZK
+            if (u.cell(p).queryPOS(POS_EU_PAUSE_AURRE))
+                u.cell(p).subPOS(POS_EU_PAUSE_AURRE);
+            if (u.cell(p).queryPOS(POS_EU_PAUSE_ATZE))
+                u.cell(p).subPOS(POS_EU_PAUSE_ATZE);
+        }
 
-			else //puede ser juntura o invitacion a pausa
-			//si es inv pausa por delante y por detras
-				u.cell(p).subPOS(POS_EU_LOT_AZK);
-				if ((u.cell(p).queryPOS(POS_EU_PAUSE_AURRE)) ||
-					(u.cell(p).queryPOS(POS_EU_PAUSE_ATZE)) ) {
-					//si n<=2 => juntura sin pausa
-					if (numWord<=2)         {
-									if (u.cell(p).queryPOS(POS_EU_PAUSE_AURRE))
-										u.cell(p).subPOS(POS_EU_PAUSE_AURRE);
-									if (u.cell(p).queryPOS(POS_EU_PAUSE_ATZE))
-										u.cell(p).subPOS(POS_EU_PAUSE_ATZE);
+        else //puede ser juntura o invitacion a pausa
+             //si es inv pausa por delante y por detras
+            u.cell(p).subPOS(POS_EU_LOT_AZK);
 
-					//	u.cell(p).setPOS(POS_EU_LOT_JNT);
-					}
+        if ((u.cell(p).queryPOS(POS_EU_PAUSE_AURRE)) ||
+                (u.cell(p).queryPOS(POS_EU_PAUSE_ATZE)) ) {
+            //si n<=2 => juntura sin pausa
+            if (numWord<=2)         {
+                if (u.cell(p).queryPOS(POS_EU_PAUSE_AURRE))
+                    u.cell(p).subPOS(POS_EU_PAUSE_AURRE);
+                if (u.cell(p).queryPOS(POS_EU_PAUSE_ATZE))
+                    u.cell(p).subPOS(POS_EU_PAUSE_ATZE);
+
+                //	u.cell(p).setPOS(POS_EU_LOT_JNT);
+            }
 //					 else {	//si num>2 => invitar a pausa por delante
 //							if (!strcmp(u.cell(p).getWord(),"eta") ||
 //							!strcmp(u.cell(p).getWord(),"edo") )
 //								u.cell(p).subPOS(POS_EU_LOT_JNT);
 //						}
-				}
-		}
+        }
+    }
 }
 
 //**********************************************************************

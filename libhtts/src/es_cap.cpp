@@ -138,7 +138,7 @@ INT LangES_TextToList::isCap(CtI p)
 CtI LangES_TextToList::pronounce( CtI p)
 {
 //	unsigned int i, j, k;
-	int i, j, k;//inaki
+	unsigned int i, j, k;
 	INT l=0, ll=0, r=0, rr=0, s; // Contadores de casos
 	INT prevvowel, endpoint, startpoint;
 	INT vowel=0;
@@ -169,7 +169,7 @@ CtI LangES_TextToList::pronounce( CtI p)
 			pattern[i] = 'c';
 		}
 	}
-	
+
 	// Y griegas como vocales
 	for( i=0; i < strlen(word); i++)
 	{
@@ -224,7 +224,7 @@ CtI LangES_TextToList::pronounce( CtI p)
 	}
 	tempWord[0] = '\0';
 	free(word); //IÑAKI
-	
+
 	word = strdup(ct(p).str);
 	ISOLatin1_StrLower(word);
 

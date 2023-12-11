@@ -99,6 +99,7 @@ Yon2.
 AbbAcrUniType TextToList::isAbbAcrUni( CtI p )
 {
 
+    (void) p;
 #ifdef HTTSDEBUG
 	htts_error("TextToList::isAbbAcrUni -> You must define your own language dependent function.");
 #endif
@@ -111,6 +112,7 @@ AbbAcrUniType TextToList::isAbbAcrUni( CtI p )
 DateType TextToList::isDate(CtI p)
 {
 
+    (void) p;
 #ifdef HTTSDEBUG
 	htts_error("TextToList::isDate -> You must define your own language dependent function.");
 #endif
@@ -124,6 +126,8 @@ DateType TextToList::isDate(CtI p)
 INT TextToList::ct2nt(const CHAR *str, BOOL flush )
 {
 
+    (void) str;
+    (void) flush;
 #ifdef HTTSDEBUG
 	htts_error("TextToList::ct2nt -> You must define your own language dependent function.");
 #endif
@@ -139,6 +143,7 @@ INT TextToList::ct2nt(const CHAR *str, BOOL flush )
 INT  TextToList::ct2nt(BOOL flush)
 {
 
+    (void) flush;
 #ifdef HTTSDEBUG
 	htts_error("TextToList::ct2nt -> You must define your own language dependent function.");
 #endif
@@ -169,6 +174,7 @@ CtI TextToList::normal(VOID)
 BOOL TextToList::isPronun(CtI p)
 {
 
+    (void) p;
 #ifdef HTTSDEBUG
 	htts_error("TextToList::isPronun -> You must define your own language dependent function.");
 #endif
@@ -183,6 +189,7 @@ BOOL TextToList::isPronun(CtI p)
 BOOL TextToList::isGroupDecd(CtI p)
 {
 
+    (void) p;
 #ifdef HTTSDEBUG
 	htts_error("TextToList::isGroupDecd -> You must define your own language dependent function.");
 #endif
@@ -196,6 +203,7 @@ BOOL TextToList::isGroupDecd(CtI p)
 INT WdChop::getchtype(CHAR c)
 {
 
+    (void) c;
 #ifdef HTTSDEBUG
 	htts_error("TextToList::getchtype -> You must define your own language dependent function.");
 #endif

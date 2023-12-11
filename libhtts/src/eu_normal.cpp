@@ -110,7 +110,7 @@ Yon2.
 */
 /*/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\*/
 /**********************************************************/
-  
+
 
 #include "eu_t2l.hpp"
 #include "isofilt.h"
@@ -125,38 +125,38 @@ Yon2.
 
 CtI LangEU_TextToList::normal(VOID)
 {
-	CtI q;
-	CtI p,firstNonP, lastToNoP;	
+	// CtI q;
+	CtI p,firstNonP, lastToNoP;
 	CtI IneedData = NULL;
 	BOOL needMoreData = FALSE;
 
 	dataNeed = FALSE;
-	
 
 
-	if (lastGrpProc) 
+
+	if (lastGrpProc)
 		firstNonP = ct.nextGrp(lastGrpProc);
-	else 
+	else
 		firstNonP = ct.firstGrp();
 
 
 
-	if (procLastGrp) 
+	if (procLastGrp)
 		lastToNoP = NULL;
-	else 
+	else
 		lastToNoP = ct.lastGrp();
 
-	
-	for (p=firstNonP; (p!=lastToNoP) && (!needMoreData); p=ct.nextGrp(p))       
-	{	
 
-		if (isScapeSeq(p)) 
+	for (p=firstNonP; (p!=lastToNoP) && (!needMoreData); p=ct.nextGrp(p))
+	{
+
+		if (isScapeSeq(p))
 			markScapeSeq(p);
-		
+
 		if (ct.isNorm(p))
 			continue;
 
-		switch (isDate(p)) 
+		switch (isDate(p))
 		{
 			case DATE_BASQUE:
 				p = expdateYMD(p);
@@ -178,13 +178,13 @@ CtI LangEU_TextToList::normal(VOID)
 			default:
 				break;
 		}
-		
-		if (ct.isNorm(p) && mustDek(p)) 
+
+		if (ct.isNorm(p) && mustDek(p))
 			p = dekline(p);
-		if (ct.isNorm(p)) 
+		if (ct.isNorm(p))
 			continue;
 
-		switch(isTime(p)) 
+		switch(isTime(p))
 		{
 			case TIME_SHORT:
 				p = exptimeHM(p);
@@ -196,13 +196,13 @@ CtI LangEU_TextToList::normal(VOID)
 			default:
 				break;
 		}
-		
-		if (ct.isNorm(p) && mustDek(p)) 
+
+		if (ct.isNorm(p) && mustDek(p))
 			p = dekline(p);
-		if (ct.isNorm(p)) 
+		if (ct.isNorm(p))
 			continue;
-		
-		switch(isNum(p))  
+
+		switch(isNum(p))
 		{
 			case NUM_CARD:
 				p = expCard(p);
@@ -210,7 +210,7 @@ CtI LangEU_TextToList::normal(VOID)
 			case NUM_ORD:
 				p = expOrd(p, FALSE);
 				break;
-			case NUM_ORD_PUNT: 
+			case NUM_ORD_PUNT:
 				p = expOrd(p, TRUE);
 				break;
 			case NUM_PUNT: //Zenbaki hamartarrak irakurtzeko, osoak hamarterrekin banatzeko puntua
@@ -244,15 +244,15 @@ CtI LangEU_TextToList::normal(VOID)
 				break;
 		}
 
-		if (needMoreData) 
+		if (needMoreData)
 			continue;
-		if (ct.isNorm(p) && mustDek(p)) 
+		if (ct.isNorm(p) && mustDek(p))
 			p = dekline(p);
-		
-		if (ct.isNorm(p)) 
+
+		if (ct.isNorm(p))
 			continue;
 
-		switch(isRomanN(p)) 
+		switch(isRomanN(p))
 		{
 			case ROMAN_ROMAN:
 				p = expRoman(p, FALSE, FALSE);
@@ -274,41 +274,41 @@ CtI LangEU_TextToList::normal(VOID)
 		}
 
 
-		if (needMoreData) 
+		if (needMoreData)
 			continue;
-		if (ct.isNorm(p) && mustDek(p)) 
+		if (ct.isNorm(p) && mustDek(p))
 			p = dekline(p);
-		if (ct.isNorm(p)) 
+		if (ct.isNorm(p))
 			continue;
 
-		if (isComp(p)) 
+		if (isComp(p))
 			p = expComp(p);
 
-		if (ct.isNorm(p) && mustDek(p)) 
+		if (ct.isNorm(p) && mustDek(p))
 			p = dekline(p);
-		if (ct.isNorm(p)) 
+		if (ct.isNorm(p))
 			continue;
 
-		if (isUnit(p)) 
+		if (isUnit(p))
 			p = expUnit(p, FALSE);
 
-		if (ct.isNorm(p) && mustDek(p)) 
+		if (ct.isNorm(p) && mustDek(p))
 			p = dekline(p);
 
-		if (ct.isNorm(p)) 
+		if (ct.isNorm(p))
 			continue;
 
 
-		if (isApost(p)) 
+		if (isApost(p))
 			p = expApost(p);
 
-		if (ct.isNorm(p) && mustDek(p)) 
+		if (ct.isNorm(p) && mustDek(p))
 			p = dekline(p);
 
-		if (ct.isNorm(p)) 
+		if (ct.isNorm(p))
 			continue;
 
-		switch (isAbbAcrUni(p)) 
+		switch (isAbbAcrUni(p))
 		{
 			case AAU_ABB:
 			case AAU_ACR:
@@ -334,14 +334,14 @@ CtI LangEU_TextToList::normal(VOID)
 				break;
 		}
 
-		if (needMoreData) 
+		if (needMoreData)
 			continue;
-		if (ct.isNorm(p) && mustDek(p)) 
+		if (ct.isNorm(p) && mustDek(p))
 			p = dekline(p);
-		if (ct.isNorm(p)) 
+		if (ct.isNorm(p))
 			continue;
 
-		switch(isPercent(p))	
+		switch(isPercent(p))
 		{
 			case PERCENT_BASQUE:
 				p = expPercent( p , TRUE );
@@ -359,41 +359,41 @@ CtI LangEU_TextToList::normal(VOID)
 				break;
 		}
 
-		if (needMoreData) 
+		if (needMoreData)
 			continue;
 
-		if (ct.isNorm(p) && mustDek(p)) 
+		if (ct.isNorm(p) && mustDek(p))
 			p = dekline(p);
 
-		if (ct.isNorm(p)) 
+		if (ct.isNorm(p))
 			continue;
 
-		if (mustExpand(p)) 
+		if (mustExpand(p))
 			p = expandGrp(p);
-		
-		if (ct.isNorm(p) && mustDek(p)) 
+
+		if (ct.isNorm(p) && mustDek(p))
 			p = dekline(p);
-		if (ct.isNorm(p)) 
+		if (ct.isNorm(p))
 			continue;
-		if ((ct.getTnor(p) == UTYPENOR_UNKNOWN)&& (!isPuntt(p))) 
+		if ((ct.getTnor(p) == UTYPENOR_UNKNOWN)&& (!isPuntt(p)))
 		{
 			ct.setTnor(p, UTYPENOR_NORMAL);
-			switch (isCap(p)) 
+			switch (isCap(p))
 			{
 			case 1://hitzeko letra guztiak maiuskulaz
 				if (!isPronun(p))	p = expandCell(p);
-				break;		
+				break;
 			case 2: // hitzeko lehen letra maiuskulaz
 				if (!isPronun(p))	p=pronounce(p);
 				break;
 			case 3: //hitzeko letrak maiuskulaz eta minuskulaz
 				if (!isPronun(p))	p = expandCell(p);
 				break;
-			case 4: // hitzak lehen zatia maiuskulaz eta bigarrena minuskulaz 
-				//if (!isPronun(p))	p=mayusDekline(p); //inaki, para que decline bien todas las siglas se elimina la comprobación de que NO sea pronunciable		
-				p=mayusDekline(p);		
-				break;	
-			case 5: // hitzeko letra guztiak minuskulaz 
+			case 4: // hitzak lehen zatia maiuskulaz eta bigarrena minuskulaz
+				//if (!isPronun(p))	p=mayusDekline(p); //inaki, para que decline bien todas las siglas se elimina la comprobación de que NO sea pronunciable
+				p=mayusDekline(p);
+				break;
+			case 5: // hitzeko letra guztiak minuskulaz
 				if (!isPuntt(p) && !isPronun(p))	p = pronounce(p);
 				if (ct.isNorm(p) && mustDek(p))	p = dekline(p);
 				break;
@@ -414,7 +414,7 @@ INT LangEU_TextToList::ct2nt(const CHAR *str, BOOL flush)
 {
   INT retval = 0;
   pCHAR ibuffer=NULL;
-  CtI lastGrp;
+  // CtI lastGrp;
 
   if (!flush) {
     ibuffer = strdup(str);
@@ -432,7 +432,7 @@ INT LangEU_TextToList::ct2nt(const CHAR *str, BOOL flush)
 // Parser EML
 // Dentro se llama a preChop
 
-	lastGrp = parserEmo (ibuffer, FALSE);
+	/*lastGrp = */parserEmo (ibuffer, FALSE);
 
 	if (ct.empty()) {
       free(ibuffer);
@@ -444,9 +444,9 @@ INT LangEU_TextToList::ct2nt(const CHAR *str, BOOL flush)
     free(ibuffer);
   }
 
-  else 
+  else
   {
-	lastGrp = parserEmo (ibuffer, TRUE);
+	/*lastGrp = */parserEmo (ibuffer, TRUE);
   }
 
 
@@ -473,7 +473,7 @@ INT LangEU_TextToList::ct2nt(const CHAR *str, BOOL flush)
        htts_warn("EU Ct2nt: PostDekChop.");
 #endif
        lastGrpProc = normal();
-	   
+
 #ifdef HEAVY_DEBUG2
        htts_warn("EU Ct2nt: PostNormal.");
 #endif

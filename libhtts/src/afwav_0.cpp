@@ -199,7 +199,7 @@ LONG AFWav::HdrR( FILE *f, KVStrList &, BOOL override )
 			}
 		}
 		else {
-			fprintf(stderr,"%s warning: Unknown chunk %c%c%c%c(%ld)\n",
+			fprintf(stderr,"%s warning: Unknown chunk %c%c%c%c(%d)\n",
 					fFormat(), ck.chunkName[0],ck.chunkName[1], ck.chunkName[2],ck.chunkName[3], ck.len);
 		}
 		xfseek(f,ckpos+ck.len+sizeof(ck),SEEK_SET);  // goto next chunk

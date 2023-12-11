@@ -84,11 +84,9 @@ Version  dd/mm/aa  Autor     Proposito de la edicion
 #include "htts_cfg.h"
 #ifdef HTTS_METHOD_HTS
 //#ifdef WIN32
-#ifdef __cplusplus
 extern "C"{
 #include "HTS_engine.h"
 }
-#else
 #include "HTS_engine.h"
 #endif
 #include "u2w.hpp"
@@ -247,5 +245,3 @@ private:
 
 };
 #endif
-#endif
-

@@ -212,7 +212,7 @@ UttWS *TextToList::ct2ws(BOOL *flush)
 	BOOL insidePar = FALSE;
 	BOOL endParse = FALSE;
 	BOOL flushLocated = FALSE;
-	BOOL pausa = FALSE; //inaki
+	// BOOL pausa = FALSE; //inaki
 	if (procLastGrp) lastToNoP = NULL;
 	else lastToNoP = ct.lastGrp();
 
@@ -239,8 +239,8 @@ UttWS *TextToList::ct2ws(BOOL *flush)
 			switch((ct(p).str)[0]){
 				case '"':
 				case '\'':
-				case '«':
-				case '»':
+				case CS_ISOLatin1_rquote:
+				case CS_ISOLatin1_lquote:
 					continue;
 					break;
 				default:
@@ -548,6 +548,8 @@ BOOL TextToList::isThereAnUtt( VOID )
 
 UttWS *TextToList::wsoutput(BOOL *flush, INT mode, VOID *param)
 {
+    (void) mode;
+    (void) param;
   UttWS *retval = NULL;
 
   if (isThereAnUtt()) retval = ct2ws(flush);
@@ -563,6 +565,8 @@ UttWS *TextToList::wsoutput(BOOL *flush, INT mode, VOID *param)
 
 pCHAR TextToList::wsoutputtext(BOOL *flush, INT mode, VOID *param)
 {
+    (void) mode;
+    (void) param;
   pCHAR retval = NULL;
 
   if (isThereAnUtt()) retval = ct2txt(flush);

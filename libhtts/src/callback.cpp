@@ -95,6 +95,7 @@ Yon2.
 VOID TextToList::callback(VOID *param)
 {
 
+    (void) param;
 #ifdef HTTS_DEBUG
        htts_error("TextToList::callback() - You must program your own CallBack function.");
 #endif

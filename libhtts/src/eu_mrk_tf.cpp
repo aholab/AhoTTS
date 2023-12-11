@@ -104,7 +104,7 @@ UttI LangEU_PhTrans::tf_mrk_ch2ph(UttPh & u, UttI senp)
 	INT	lengTF, lengWORD, dif, lengTFPKin, lengWORDPKin, numP, numTF;
 	INT	i=0;
 	CHAR *pch;
-	
+
 	mydic=new LangEU_HDicDB; //INAKI
 	mydic->create(getPhTHDicName()); //INAKI
 	//Hiztegian egin behar den BILAKETA
@@ -118,16 +118,16 @@ UttI LangEU_PhTrans::tf_mrk_ch2ph(UttPh & u, UttI senp)
 Como las longitudes de las transcripciones en el diccionario compilado y de texto son diferentes porque en el compilado hay un caracter LF de más, las igualo aquí
 */
 	//fprintf(stderr,"Antes del ajuste long. transcrip=%d %s\n",strlen(transkrip),transkrip);
-	if (transkrip[strlen(transkrip)-1]==10) 
+	if (transkrip[strlen(transkrip)-1]==10)
 	{
 		//fprintf(stderr,"transkrip[strlen(transkrip)-1]=10\n");
-		
+
 		transkrip[strlen(transkrip)-1]='\0';
 	}
 
 
 	//Behar diren luzeeren kalkulua
-	
+
 //0.1.0 ISC rehacemos el calculo del numero de puntos de verdad
 
 //	numP=(INT)floor(float(lengWORD/2.0));	//Hiztegiaren transkripzio fonetikoaren fonemak puntu seinuen bitartez banandurik daude. Transkripzioaren puntu seinuen kopuruaren kalkulua.
@@ -141,7 +141,7 @@ Como las longitudes de las transcripciones en el diccionario compilado y de text
 //0.1.0 ISC	lengTF= (INT)ceil(float(lengTFPKin/2.0));	//Transkripzio fonetikoaren luzeera.
 	lengTF=lengTFPKin-numP; //Transkripzio fonetikoaren luzeera.
 	lengWORD=strlen(word);	//Hitzaren luzeera.
-	
+
 	dif=lengWORD-lengTF;		//Luzeeren desberdintasuna.
 	lengWORDPKin=lengWORD+numP;	//Hitzaren luzeera puntu seinuak edukiko balitu.
 
@@ -162,7 +162,7 @@ Como las longitudes de las transcripciones en el diccionario compilado y de text
 	switch (transkrip[i])
 	{
 
-		case '.' : numTF++; break; 
+		case '.' : numTF++; break;
 		case 'a' : SETPH(pTF, PHEU_a);   break;
 		case 'e' : SETPH(pTF, PHEU_e); break;
 		case 'i' : SETPH(pTF, PHEU_i);  break;
@@ -170,31 +170,23 @@ Como las longitudes de las transcripciones en el diccionario compilado y de text
 		case 'u' : SETPH(pTF, PHEU_u);  break;
 
 		case 'j':
-			if (i!=(lengTFPKin-1))
-			{
-				if (transkrip[i+1]=='.')
-				{
-					SETPH(pTF, PHEU_iaprox); 	break;
-				}
-				if (transkrip[i+1]!='.')
-				{
-					if (transkrip[i+1]!='j')
-					{
-						fprintf(stderr,"Warning: Hitzegian idatzitako transkripzioa gaizki dago.\n \t  GOGORATU: FONEMAK PUNTU SEINUAZ DESBERDINDU.");
-						SETPH(pTF, PHEU_iaprox); break;
-					}
-					else
-					{
-						i++;
-						SETPH(pTF, PHEU_jj);  break;
-					}
-				}
-			}
-			else
-			{
-				SETPH(pTF, PHEU_iaprox); break;
+			if (i==(lengTFPKin-1)) {
+				SETPH(pTF, PHEU_iaprox);
+                break;
 			}
 
+            if (transkrip[i+1]=='.') {
+                SETPH(pTF, PHEU_iaprox);
+                break;
+            }
+
+            if (transkrip[i+1]=='j') {
+                i++;
+                SETPH(pTF, PHEU_jj);  break;
+            }
+            fprintf(stderr,"Warning: Hitzegian idatzitako transkripzioa gaizki dago.\n \t  GOGORATU: FONEMAK PUNTU SEINUAZ DESBERDINDU.");
+            SETPH(pTF, PHEU_iaprox); break;
+            break;
 		case 'w': SETPH(pTF,PHEU_uaprox); break;
 
 
@@ -219,33 +211,27 @@ Como las longitudes de las transcripciones en el diccionario compilado y de text
 		case 'f': SETPH(pTF, PHEU_f);  break;
 
 		case 'g':
-			if (i!=(lengTFPKin-1))
-			{
-				if (transkrip[i+1]!='.')
-				{
-					if (transkrip[i+1]!='j')
-					{
-						fprintf(stderr,"Warning: Hitzegian idatzitako transkripzioa gaizki dago.\n \t  GOGORATU: FONEMAK PUNTU SEINUAZ DESBERDINDU.");
-						SETPH(pTF, PHEU_g); break;
-					}
-					else
-					{
-						i++;
-						SETPH(pTF, PHEU_dj); break;
-					}
-				}
+			if (i==(lengTFPKin-1)) {
+				SETPH(pTF, PHEU_g);
+                break;
+			}
+
+            if (transkrip[i+1]=='.'){
+                SETPH(pTF, PHEU_g);
+                break;
+            }
+
+            if (transkrip[i+1]=='j') {
+                i++;
+                SETPH(pTF, PHEU_dj);
+                break;
+            }
+            fprintf(stderr,"Warning: Hitzegian idatzitako transkripzioa gaizki dago.\n \t  GOGORATU: FONEMAK PUNTU SEINUAZ DESBERDINDU.");
+            SETPH(pTF, PHEU_g);
+            break;
 /*EVA 2015/07/07
 Si llegaba aquí como no habia else con el correspondiente break se ponia la gaproximante del siguiente case en vez de la g normal
 */
-				else
-				{
-					SETPH(pTF, PHEU_g); break;
-				}
-			}
-			else
-			{
-				SETPH(pTF, PHEU_g); break;
-			}
 
 		case 'G': SETPH(pTF, PHEU_gaprox);  break;
 
@@ -264,113 +250,104 @@ Si llegaba aquí como no habia else con el correspondiente break se ponia la gapr
 		case 'p': SETPH(pTF, PHEU_p); break;
 
 		case 'r':
-			if (i!=(lengTFPKin-1)) //Ez bada azkeneko grafia
-			{
-				if (transkrip[i+1]=='.')
-				{
-					SETPH(pTF, PHEU_r); 	break;
-				}
-				else if (transkrip[i+1]!='.')
-				{
-					if (transkrip[i+1]!='r')
-					{
-						fprintf(stderr,"Warning: Hitzegian idatzitako transkripzioa gaizki dago.\n \t  GOGORATU: FONEMAK PUNTU SEINUAZ DESBERDINDU.");
-						SETPH(pTF, PHEU_r); 	break;
-					}
-					else
-					{
-						i++;
-						SETPH(pTF, PHEU_rr);  break;
-					}
-				}
-			}
-			else //Azkenekoa baldin bada
-			{
+            //Azkenekoa baldin bada
+			if (i==(lengTFPKin-1)) {
 				SETPH(pTF, PHEU_r);
 				break;
-			}
+            }
+            //Ez bada azkeneko grafia
+            if (transkrip[i+1]=='.') {
+                SETPH(pTF, PHEU_r);
+                break;
+            }
 
-			case 's':
-				if (i!=(lengTFPKin-1)) //Ez bada azkeneko grafia
-				{
-					if (transkrip[i+1]=='.')
-					{
-						SETPH(pTF, PHEU_s); break;
-					}
-					if (transkrip[i+1]!='.')
-					{
-						if (transkrip[i+1]!='`')
-						{
-							fprintf(stderr,"Warning: Hitzegian idatzitako transkripzioa gaizki dago.\n \t  GOGORATU: FONEMAK PUNTU SEINUAZ DESBERDINDU.");
-							SETPH(pTF, PHEU_s); break;
-						}
-						else
-						{
-							i++;
-							SETPH(pTF, PHEU_z); 	break;
-						}
-					}
-				}
-				else //Azkeneko grafia bada
-				{
-					SETPH(pTF, PHEU_s); 	break;
-				}
+            if (transkrip[i+1]=='r') {
+                i++;
+                SETPH(pTF, PHEU_rr);
+                break;
+            }
 
-			case 'S': SETPH(pTF,PHEU_x); break;
+            fprintf(stderr,"Warning: Hitzegian idatzitako transkripzioa gaizki dago.\n \t  GOGORATU: FONEMAK PUNTU SEINUAZ DESBERDINDU.");
+            SETPH(pTF, PHEU_r);
+            break;
 
-			case 't':
-				if (i!=(lengTFPKin-1)) //Ez bada azkeneko grafia
-				{
-					if (transkrip[i+1]=='.')  //"." bat baldin badu "t" grafia da.
-					{
-						SETPH(pTF,PHEU_t); break;
-					}
-					else if (transkrip[i+1]!='.')  //"." ez bada
-					{
-						if ((transkrip[i+1]!='s') && (transkrip[i+1]!='S'))//hurrengo ez bada s edo S gaizki dago
-						{
-							fprintf(stderr,"Warning: Hitzegian idatzitako transkripzioa gaizki dago.\n \t  GOGORATU: FONEMAK PUNTU SEINUAZ DESBERDINDU.");
-							SETPH(pTF,PHEU_t); break;
-						}
+        case 's':
+            if (i==(lengTFPKin-1)) //Azkeneko grafia bada
+            {
+                SETPH(pTF, PHEU_s);
+                break;
+            }
+            //Ez bada azkeneko grafia
+            if (transkrip[i+1]=='.')
+            {
+                SETPH(pTF, PHEU_s);
+                break;
+            }
+            if (transkrip[i+1]=='`'){
+                i++;
+                SETPH(pTF, PHEU_z);
+                break;
+            }
 
-						else if (transkrip[i+1]=='S')  //S bada
-						{
-							i++;
-							SETPH(pTF,PHEU_tx); break;
-						}
+            fprintf(stderr,"Warning: Hitzegian idatzitako transkripzioa gaizki dago.\n \t  GOGORATU: FONEMAK PUNTU SEINUAZ DESBERDINDU.");
+            SETPH(pTF, PHEU_s);
+            break;
 
-						else if (transkrip[i+1]=='s')  //s bada
-						{
-							i++;
-							if (i!=(lengTF-1)) //"s"-a ez bada azkeneko grafia
-							{
-								if (transkrip[i+1]=='.')
-								{
-									SETPH(pTF,PHEU_ts); break;
-								}
-								else if (transkrip[i+1]=='`')
-								{
-									i++;
-									SETPH(pTF,PHEU_tZ); break;
-								}
-								else
-								{
-									fprintf(stderr,"Warning: Hitzegian idatzitako transkripzioa gaizki dago.\n \t  GOGORATU: FONEMAK PUNTU SEINUAZ DESBERDINDU.");
-									SETPH(pTF,PHEU_ts); break;
-								}
-							}
-							else //"s" azken grafia baldin bada
-							{
-								SETPH(pTF,PHEU_ts); break;
-							}
-						}	//"s"-ren bukaera
-					}//"tS", "ts", edo "ts´"-ren bukaerak
-				}
+        case 'S': SETPH(pTF,PHEU_x); break;
 
-				else //Azkeneko grafia baldin bada
-				{
-					SETPH(pTF,PHEU_t); break;
-				}
+        case 't':
+            if (i!=(lengTFPKin-1)) //Ez bada azkeneko grafia
+            {
+                if (transkrip[i+1]=='.')  //"." bat baldin badu "t" grafia da.
+                {
+                    SETPH(pTF,PHEU_t); break;
+                }
+                else if (transkrip[i+1]!='.')  //"." ez bada
+                {
+                    if ((transkrip[i+1]!='s') && (transkrip[i+1]!='S'))//hurrengo ez bada s edo S gaizki dago
+                    {
+                        fprintf(stderr,"Warning: Hitzegian idatzitako transkripzioa gaizki dago.\n \t  GOGORATU: FONEMAK PUNTU SEINUAZ DESBERDINDU.");
+                        SETPH(pTF,PHEU_t); break;
+                    }
+
+                    else if (transkrip[i+1]=='S')  //S bada
+                    {
+                        i++;
+                        SETPH(pTF,PHEU_tx); break;
+                    }
+
+                    else if (transkrip[i+1]=='s')  //s bada
+                    {
+                        i++;
+                        if (i!=(lengTF-1)) //"s"-a ez bada azkeneko grafia
+                        {
+                            if (transkrip[i+1]=='.')
+                            {
+                                SETPH(pTF,PHEU_ts); break;
+                            }
+                            else if (transkrip[i+1]=='`')
+                            {
+                                i++;
+                                SETPH(pTF,PHEU_tZ); break;
+                            }
+                            else
+                            {
+                                fprintf(stderr,"Warning: Hitzegian idatzitako transkripzioa gaizki dago.\n \t  GOGORATU: FONEMAK PUNTU SEINUAZ DESBERDINDU.");
+                                SETPH(pTF,PHEU_ts); break;
+                            }
+                        }
+                        else //"s" azken grafia baldin bada
+                        {
+                            SETPH(pTF,PHEU_ts); break;
+                        }
+                    }	//"s"-ren bukaera
+                }//"tS", "ts", edo "ts´"-ren bukaerak
+            }
+
+            else //Azkeneko grafia baldin bada
+            {
+                SETPH(pTF,PHEU_t); break;
+            }
 
 		case 'T': SETPH(pTF, PHEU_T); break;
 

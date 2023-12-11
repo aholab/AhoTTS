@@ -196,6 +196,8 @@ CtI LangES_TextToList::expRoman(CtI p, BOOL nearPoint, BOOL farPoint)
 	CtI q;
 	INT stat, emotion, emo_intensity;
 	INT num,r;
+    (void) farPoint; // XXX Unused...
+    (void) nearPoint; // XXX Unused...
 
 	q=p;
 

@@ -492,7 +492,7 @@ BOOL WdChop::filterLabel(pCHAR label){
 
 		if ((i != -1) && (emo[indiceEmo] == i)){
 		//La palabra después de '/' SI es una emoción y coincide con el de la pila. Eliminamos una emoción de la lista
-			indiceEmo=indiceEmo--;
+			indiceEmo--;
 			salida = FALSE;
 		}else{
 		//La palabra después de '/' NO es una emoción o NO coindice con el de la pila. Hay que sintetizar
@@ -510,7 +510,7 @@ BOOL WdChop::filterLabel(pCHAR label){
 			salida = FALSE;
 
 			//Alteramos la pila
-			indiceEmo = indiceEmo ++;
+			indiceEmo++;
 			emo[indiceEmo] = i;
 
 			//Ahora buscamos la etiqueta de intensidad

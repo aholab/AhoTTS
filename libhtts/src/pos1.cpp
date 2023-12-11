@@ -366,6 +366,7 @@ VOID LangEU_Categ::babait(UttWS &u,UttI p, char *word_act,LangEU_HDicDB &db)
 							break;
 						}
 					}
+                    break;
 
 				default:
 					if (len_adi>=4) {

@@ -210,13 +210,12 @@ VOID Mark1DList::adjust_ins( LONG posi, LONG n )
 	while (p!=0) {
 		sp=span(p);
 		iposi=pos(p);
-		if (sp==0)
+		if (sp==0) {
 			if (iposi>=posi) pos(p)=iposi+n;
-		else if (sp>0) {
+        } else if (sp>0) {
 			if (posi<=iposi) pos(p)=iposi+n;
 			else if (posi<iposi+sp-1) span(p)=sp+n;
-		}
-		else {
+		} else {
 			if (posi<=iposi+sp+1) pos(p)=iposi+n;
 			else if (posi<iposi) span(p)=sp-n;
 		}

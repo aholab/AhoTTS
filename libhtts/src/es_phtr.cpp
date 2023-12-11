@@ -103,7 +103,6 @@ VOID LangES_PhTrans::pausegr_ch2ph(UttPh & u, UttI senp)
 #define DEL(p)  NEXT(p)
 
 	CHAR *eietit = (char *)"ei" CS_S_etilde CS_S_itilde;
-	CHAR *lns = (char *)"lns";
 	CHAR *nml = (char *)"nml";
 	CHAR *nm = (char *)"nm";
 	CHAR *vow = (char *)"aeiou" CS_S_atilde CS_S_etilde CS_S_itilde CS_S_otilde CS_S_utilde CS_S_uuml;
@@ -123,7 +122,6 @@ VOID LangES_PhTrans::pausegr_ch2ph(UttPh & u, UttI senp)
 		case 'i': SETPH(p, PHES_i); break;
 		case 'o': SETPH(p, PHES_o); break;
 		case 'u': SETPH(p, PHES_u); break;
-		case 'ü': SETPH(p, PHES_u); break; //INAKI: añadir el caracter con diéresis
 		case CS_atilde: SETPH(p, PHES_a); SETSTRESS(p); break;
 		case CS_etilde: SETPH(p, PHES_e); SETSTRESS(p); break;
 		case CS_itilde: SETPH(p, PHES_i); SETSTRESS(p); break;

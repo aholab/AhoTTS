@@ -139,7 +139,7 @@ AbbAcrUniType	LangEU_TextToList::isAbbAcrUni( CtI p )
 	UINT i;
 	BOOL strPunt = FALSE; //FALSE -> looking for 'l' pattern. TRUE -> looking for 'p' pattern
 	BOOL patternOk = TRUE;
-	pCHAR temp = NULL,input;
+	pCHAR temp = NULL/*,input*/;
 
 	INT len, abbacr;
 	HDicRef myref;
@@ -157,7 +157,7 @@ AbbAcrUniType	LangEU_TextToList::isAbbAcrUni( CtI p )
 
 	q = p;
 
-	input = ct.getStr(p);
+	/*input = */ct.getStr(p);
 
 	//Buscamos patrones de tipo AbbAcrUnit validos.
 	if(strlen(pattern)==1)

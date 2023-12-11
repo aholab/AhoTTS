@@ -104,8 +104,13 @@ Yon2.
 
 /**********************************************************/
 
-CHAR vowelStr[] = "aeiouAEIOUáéíóúÁÉÍÓÚüÜ"; //INAKI: añadir üÜ
-CHAR consoStr[] = "bcdfghjklmnñpqrstvwxyzBCDFGHJKLMNÑPQRSTVWXYZ";
+CHAR vowelStr[] = {'a','e','i', 'o','u','A','E','I','O','U', CS_atilde,
+    CS_etilde, CS_itilde, CS_otilde , CS_utilde, CS_Atilde, CS_Etilde,
+    CS_Itilde, CS_Otilde, CS_Utilde, CS_uuml, CS_Uuml,'\0'};
+CHAR consoStr[] = {'b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n',
+    CS_ntilde, 'p', 'q', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z', 'B', 'C', 'D',
+    'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', CS_Ntilde, 'P', 'Q', 'R', 'S', 'T',
+    'V', 'W', 'X', 'Y', 'Z', '\0'};
 
 /**********************************************************/
 
@@ -171,41 +176,41 @@ BOOL isConso(CHAR ch)
 CHAR uniqVowel(CHAR ch)
 {
   CHAR retval = 'X';
-  switch  ((unsigned int)ch)  { //inaki (casting)
+  switch  (ch)  {
           case 'a':
           case 'A':
-          case 'á':
-          case 'Á':
+          case CS_atilde:
+          case CS_Atilde:
                retval = 'a';
                break;
           case 'e':
           case 'E':
-          case 'é':
-          case 'É':
+          case CS_etilde:
+          case CS_Etilde:
                retval = 'e';
                break;
           case 'i':
           case 'I':
-          case 'í':
-          case 'Í':
+          case CS_itilde:
+          case CS_Itilde:
                retval = 'i';
                break;
           case 'o':
           case 'O':
-          case 'ó':
-          case 'Ó':
+          case CS_otilde:
+          case CS_Otilde:
                retval = 'o';
                break;
           case 'u':
           case 'U':
-          case 'ú':
-          case 'Ú':
-	  case 'ü':
-	  case 'Ü':
+          case CS_utilde:
+          case CS_Utilde:
+          case CS_uuml:
+          case CS_Uuml:
                retval = 'u';
                break;
           default:
-          	break;    
+          	break;
   }
   return retval;
 }
